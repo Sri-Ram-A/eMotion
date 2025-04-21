@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+</head>
+<body>
+    <h2>WebSocket Test</h2>
+    <input type="text" id="messageInput" placeholder="Enter message">
+    <button onclick="sendMessage()">Send</button>
+    <div id="messages"></div>
+
+    <script>
+        // Adjust this URL to match your Django Channels routing
+        const socket = new WebSocket('https://ominous-telegram-v6r4vpwjw9x3p69x-8000.app.github.dev/ws/rider/');
+
+        socket.onopen = function(e) {
+            console.log("WebSocket connection established.");
+            document.getElementById('messages').innerHTML += "<p><em>Connected.</em></p>";
+        };
+
+        socket.onmessage = function(event) {
+            console.log("Message received:", event.data);
+            document.getElementById('messages').innerHTML += "<p><strong>Received:</strong> " + event.data + "</p>";
+        };
+
+        socket.onclose = function(event) {
+            console.log("WebSocket closed.");
+            document.getElementById('messages').innerHTML += "<p><em>Disconnected.</em></p>";
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+
+        function sendMessage() {
+            const input = document.getElementById("messageInput");
+            const message = input.value;
+            socket.send(message);
+            document.getElementById('messages').innerHTML += "<p><strong>Sent:</strong> " + message + "</p>";
+            input.value = "";
+        }
+    </script>
+</body>
+</html>

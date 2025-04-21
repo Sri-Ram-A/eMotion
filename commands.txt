@@ -1,0 +1,17 @@
+::backend
+pip install django
+python -m pip install -U 'channels[daphne]'
+pip install django-rest-framework
+django-admin startproject backend .
+cd ..
+python manage.py startapp communication
+python manage.py startapp api
+
+python manage.py createsuperuser --username admin --email admin@example.com
+
+
+::frontend-rider
+npx create-expo-stack@latest
+
+::frontend-driver
+npx create-expo-stack@latest
