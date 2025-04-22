@@ -1,43 +1,63 @@
 <!DOCTYPE html>
 <html>
-<head>
-    <title>WebSocket Test</title>
-</head>
+<head><title>Group Chat Test</title></head>
 <body>
-    <h2>WebSocket Test</h2>
-    <input type="text" id="messageInput" placeholder="Enter message">
-    <button onclick="sendMessage()">Send</button>
-    <div id="messages"></div>
+    <h2>WebSocket Group Chat</h2>
+
+    <!-- Room Name Input -->
+    <div id="roomInputDiv">
+        <input id="group" placeholder="Group name (e.g. room1)" />
+        <button onclick="connect()">Connect</button>
+    </div>
+
+    <!-- Messaging Interface (hidden initially) -->
+    <div id="chatInterface" style="display:none;">
+        <h3>Connected to <span id="roomName"></span></h3>
+        <input id="msg" placeholder="Message" />
+        <button onclick="sendMessage()">Send</button>
+        <div id="log"></div>
+    </div>
 
     <script>
-        // Adjust this URL to match your Django Channels routing
-        const socket = new WebSocket('https://ominous-telegram-v6r4vpwjw9x3p69x-8000.app.github.dev/ws/rider/');
+        let socket = null;
 
-        socket.onopen = function(e) {
-            console.log("WebSocket connection established.");
-            document.getElementById('messages').innerHTML += "<p><em>Connected.</em></p>";
-        };
+        // Function to connect to WebSocket with a specific room
+        function connect() {
+            const group = document.getElementById("group").value;
+            const wsURL = `wss://ominous-telegram-v6r4vpwjw9x3p69x-8000.app.github.dev/ws/rider/${group}/`;  // Replace with your actual WebSocket URL
+            socket = new WebSocket(wsURL);
 
-        socket.onmessage = function(event) {
-            console.log("Message received:", event.data);
-            document.getElementById('messages').innerHTML += "<p><strong>Received:</strong> " + event.data + "</p>";
-        };
+            // When WebSocket connection is opened
+            socket.onopen = () => {
+                document.getElementById("roomInputDiv").style.display = "none";  // Hide room input form
+                document.getElementById("chatInterface").style.display = "block";  // Show chat interface
+                document.getElementById("roomName").textContent = group;  // Display the room name
+                log("Connected to " + group);
+            };
 
-        socket.onclose = function(event) {
-            console.log("WebSocket closed.");
-            document.getElementById('messages').innerHTML += "<p><em>Disconnected.</em></p>";
-        };
+            // When a message is received from the WebSocket
+            socket.onmessage = (e) => {
+                log("Received: " + e.data);  // Display the received message
+            };
 
-        socket.onerror = function(error) {
-            console.error("WebSocket error:", error);
-        };
+            // When WebSocket connection is closed
+            socket.onclose = () => {
+                log("Disconnected");
+            };
+        }
 
+        // Function to send a message to the WebSocket
         function sendMessage() {
-            const input = document.getElementById("messageInput");
-            const message = input.value;
-            socket.send(message);
-            document.getElementById('messages').innerHTML += "<p><strong>Sent:</strong> " + message + "</p>";
-            input.value = "";
+            const msg = document.getElementById("msg").value;
+            if (socket && socket.readyState === WebSocket.OPEN) {
+                socket.send(msg);  // Send the message to WebSocket
+                log("Sent: " + msg);  // Display the sent message
+            }
+        }
+
+        // Function to log messages to the chat log
+        function log(message) {
+            document.getElementById("log").innerHTML += "<p>" + message + "</p>";
         }
     </script>
 </body>
