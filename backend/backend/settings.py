@@ -23,8 +23,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = "django-insecure-66g_ybia3u1t7s57ac*8ile$ub4ib^k=i3g)642acdb&a#(t*v"
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
 
+### To view the status codes imn DRF
+# DEBUG = True 
+DEBUG = False
 ALLOWED_HOSTS = []
 
 
@@ -126,9 +128,20 @@ STATIC_URL = "static/"
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
-###
+### Right now using inMemory ,,,will shift to redis later
 CHANNEL_LAYERS = {
     "default": {
         "BACKEND": "channels.layers.InMemoryChannelLayer"
     }
+}
+
+### If debug is false then ALLOWED_HOSTS must be written
+ALLOWED_HOSTS = ["*"]
+
+### To view a good UI in browser so that i donot use Postman
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+        'rest_framework.renderers.BrowsableAPIRenderer',
+    )
 }
