@@ -1,7 +1,6 @@
 from rest_framework import serializers
 from . import models
-import pprint
-
+from pprint import pprint
 class RiderRegisterSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = models.Rider
