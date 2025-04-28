@@ -25,8 +25,8 @@ SECRET_KEY = "django-insecure-66g_ybia3u1t7s57ac*8ile$ub4ib^k=i3g)642acdb&a#(t*v
 # SECURITY WARNING: don't run with debug turned on in production!
 
 ### To view the status codes imn DRF
-# DEBUG = True 
-DEBUG = False
+DEBUG = True 
+# DEBUG = False
 ALLOWED_HOSTS = []
 
 
@@ -140,6 +140,10 @@ ALLOWED_HOSTS = ["*"]
 
 ### To view a good UI in browser so that i donot use Postman
 REST_FRAMEWORK = {
+    # 'DEFAULT_AUTHENTICATION_CLASSES': (
+    #     ###FOR JWT AUTHENTICATION
+    #     'rest_framework_simplejwt.authentication.JWTAuthentication'
+    # ),
     'DEFAULT_RENDERER_CLASSES': (
         'rest_framework.renderers.JSONRenderer',
         'rest_framework.renderers.BrowsableAPIRenderer',

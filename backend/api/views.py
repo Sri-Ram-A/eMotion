@@ -1,5 +1,7 @@
 from rest_framework.views import APIView
 from rest_framework.response import Response
+# from rest_framework_simplejwt.tokens import RefreshToken
+# from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import status
 from django.shortcuts import get_object_or_404
 from rest_framework import generics
@@ -30,7 +32,11 @@ class RiderProfile(APIView):
 
 class RiderHistory(APIView):
     def get(self,request,pk):
+        print(f"Received pk: {pk}") 
+        print(f"datatype pk: {type(pk)}") 
         rider_rides = models.RideDetails.objects.filter(rider=pk)
+        for ride in rider_rides:
+            print(ride.__dict__)
         serializer=serializers.RiderHistorySerializer(rider_rides,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

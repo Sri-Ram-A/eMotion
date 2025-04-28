@@ -1,0 +1,69 @@
+# Test API Endpoints
+# Welcome Endpoint
+# #YOU should download REST Client extensuon from VS Code
+GET http://localhost:8000/api/
+Accept: application/json
+
+###
+# Rider Register
+POST http://localhost:8000/api/rider/register/
+Content-Type: application/json
+
+{
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "phone_number": "1234567890"
+}
+
+
+###
+# Rider Profile (replace `<rider_pk>` with the actual rider PK)
+GET http://localhost:8000/api/rider/profile/1/
+Accept: application/json
+
+###
+# Rider History (replace `<rider_pk>` with the actual rider PK)
+GET http://localhost:8000/api/rider/history/1/
+Accept: application/json
+
+###
+# Rider Favourites (replace `<rider_pk>` with the actual rider PK)
+GET http://localhost:8000/api/rider/favourites/1/
+Accept: application/json
+
+###
+# Driver Register
+POST http://localhost:8000/api/driver/register/
+Content-Type: application/json
+
+{
+  "name": "Jane Smith",
+  "email": "jane.smith@example.com",
+  "phone_number": "9876543210",
+  "vehicle_year": 2020,
+  "vehicle_plate": "XYZ1234",
+  "driving_license": "D123456789",
+  "rating": 5
+}
+
+###
+# Driver Profile (replace `<driver_pk>` with the actual driver PK)
+GET http://localhost:8000/api/driver/profile/5/
+Accept: application/json
+
+###
+# Driver History (replace `<driver_pk>` with the actual driver PK)
+GET http://localhost:8000/api/driver/history/1/
+Accept: application/json
+
+###
+# Leaderboards (this can be customized later once the implementation is ready)
+GET http://localhost:8000/api/driver/leaderboards/
+Accept: application/json
+
+###
+# Demand (this can be customized later once the implementation is ready)
+GET http://localhost:8000/api/driver/demand/
+Accept: application/json
+
+
