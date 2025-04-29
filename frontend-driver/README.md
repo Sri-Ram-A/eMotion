@@ -4,6 +4,16 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
 
 ## Get started
 
+## 🛠 Requirements
+
+Before running the apps, make sure you have:
+
+- [Node.js](https://nodejs.org/) installed
+- [Expo CLI](https://docs.expo.dev/get-started/installation/) installed globally:
+  ```bash
+  npm install -g expo-cli
+  ```
+
 1. Install dependencies
 
    ```bash
