@@ -8,6 +8,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from colorama import Fore, Back, Style, init
 import json
 init()
+
 #Back.some_color
 #Fore.some_color
 """

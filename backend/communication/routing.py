@@ -9,3 +9,4 @@ websocket_urlpatterns = [
     path('ws/rider/getDriver', consumers.Rider.as_asgi()), 
     path('ws/driver/getRider', consumers.Driver.as_asgi()),  
 ]
+

@@ -1,6 +1,7 @@
 # Test API Endpoints
 # Welcome Endpoint
 # #YOU should download REST Client extensuon from VS Code
+
 GET http://localhost:8000/api/
 Accept: application/json
 
