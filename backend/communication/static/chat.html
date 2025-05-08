@@ -24,7 +24,7 @@
         // Function to connect to WebSocket with a specific room
         function connect() {
             const group = document.getElementById("group").value;
-            const wsURL = `wss://ominous-telegram-v6r4vpwjw9x3p69x-8000.app.github.dev/ws/rider/${group}/`;  // Replace with your actual WebSocket URL
+            const wsURL = `wss://localhost:8000/ws/rider/${group}/`;  // Replace with your actual WebSocket URL
             socket = new WebSocket(wsURL);
 
             // When WebSocket connection is opened

@@ -6,7 +6,7 @@ from . import consumers
 websocket_urlpatterns = [
     # re_path(r'^ws/rider(?:/(?P<group_name>\w+))?/?$', consumers.Rider.as_asgi()),
     # path('ws/driver/', consumers.DriverSyncConsumer.as_asgi()),
-    path('ws/rider/getDriver', consumers.Rider.as_asgi()), 
-    path('ws/driver/getRider', consumers.Driver.as_asgi()),  
+    path('ws/rider/', consumers.Rider.as_asgi()), 
+    path('ws/driver/', consumers.Driver.as_asgi()),  
 ]
 

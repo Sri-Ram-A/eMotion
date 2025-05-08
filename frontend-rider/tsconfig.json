@@ -2,7 +2,7 @@
   "extends": "expo/tsconfig.base",
   "compilerOptions": {
     "jsx": "react",
-    "strict": false,
+    "strict": true, //If you keep strict as true then its headache dear
     "paths": {
       "@/*": [
         "./*"

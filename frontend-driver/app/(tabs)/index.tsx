@@ -1,9 +1,11 @@
-import { Text, View,  StyleSheet } from 'react-native';
+import { Text, View,  StyleSheet, TextInput } from 'react-native';
 import React from 'react';
+import { Link } from 'expo-router';
 export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Home screen</Text>
+      <Link href="./getRider"><Text>Click here</Text></Link>
     </View>
   );
 }
