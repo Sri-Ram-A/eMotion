@@ -1,15 +1,38 @@
 import { Text, View, StyleSheet, TextInput, Button } from 'react-native';
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import * as api from '@/services/api';
-import { handleSubmit } from '@/services/routes';
-//isrc for websockets :  https://reactnative.dev/docs/network
+
 export default function AboutScreen() {
     const [source, setSource] = useState('');
     const [destination, setDestination] = useState('');
-    const ws = new WebSocket(api.RIDER_SOCKET);
-    ws.onopen = () => { // connection opened
-        ws.send(JSON.stringify("Rider connected")); 
-    };
+    const [driverMessage,setDriverMessage]=useState('');
+    const ws = useRef<WebSocket | null>(null);
+
+    useEffect(() => {
+        // Initialize WebSocket once,useEffect will avoid reloading whu]ile rerendering
+        ws.current = new WebSocket(api.RIDER_SOCKET);
+        ws.current.onopen = () => {
+            if(!ws.current) return
+            console.log("WebSocket connected");
+            ws.current.send(JSON.stringify("Rider connected"));
+        };
+        ws.current.onmessage = (e) => {
+            console.log("Received:", e.data);
+            setDriverMessage(e.data)
+        };
+        ws.current.onerror = (e:Event) => {
+            console.error("WebSocket error:", e);
+        };
+        ws.current.onclose = () => {
+            console.log("WebSocket closed");
+        };
+        // Cleanup WebSocket on unmount
+        return () => {
+            if (ws.current) {
+                ws.current.close();
+            }
+        };
+    }, []);
     const message={
         "source":source,
         "destination":destination
@@ -27,10 +50,13 @@ export default function AboutScreen() {
                 placeholder='Enter Destination'
             />
             <Button
-                onPress={()=>ws.send(String(message))} // onPress={handleSubmit} this is correct if handle didnt have parameters
+                onPress={()=>ws.current?.send(String(message))} // onPress={handleSubmit} this is correct if handle didnt have parameters
                 title="Submit"
                 color="#841584"
             />
+            <Text>
+                Message from driver : {driverMessage}
+            </Text>
         </View>
     );
 }
