@@ -9,7 +9,7 @@ class RiderRegisterSerializer(serializers.ModelSerializer):
 class RiderLoginSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = models.Rider
-		fields = ['phone_number']
+		fields = ['name','email','phone_number']
 		
 class RiderProfileSerializer(serializers.ModelSerializer):
 	class Meta:
@@ -29,12 +29,12 @@ class RiderFavouriteSerializer(serializers.ModelSerializer):
 class DriverRegisterSerializer(serializers.ModelSerializer):
 	class Meta:
 		model=models.Driver
-		fields='__all__'
+		exclude=['rating','earnings']
 
 class DriverLoginSerializer(serializers.ModelSerializer):
 	class Meta:
 		model=models.Driver
-		fields=['phone_number']
+		fields = ['name','email','phone_number']
 
 class DriverProfileSerializer(serializers.ModelSerializer):
 	class Meta:

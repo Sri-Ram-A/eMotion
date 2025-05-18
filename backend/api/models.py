@@ -18,6 +18,7 @@ class Driver(models.Model):
     driving_license=models.CharField(max_length=15)
     rating=models.CharField(max_length=1,default=0)
     earnings=models.CharField(default=0)
+    available=models.CharField(default="1")
 
     def __str__(self):
         return f"{self.name}"
