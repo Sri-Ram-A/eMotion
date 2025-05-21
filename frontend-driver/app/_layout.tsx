@@ -7,17 +7,17 @@ export default function RootLayout() {
     <IDProvider>
       <Stack>
         <Stack.Screen
-          name="register"
-          options={{
-            headerShown: true,
-            title: 'register'
-          }}
-        />
-        <Stack.Screen
           name="index"
           options={{
             headerShown: true,
             title: 'login'
+          }}
+        />
+        <Stack.Screen
+          name="register"
+          options={{
+            headerShown: true,
+            title: 'register'
           }}
         />
         <Stack.Screen

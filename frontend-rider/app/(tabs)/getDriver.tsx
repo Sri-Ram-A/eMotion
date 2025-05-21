@@ -41,6 +41,10 @@ export default function AboutScreen() {
             source,
             destination,
         };
+        if (!source.trim() || !destination.trim()) {
+            alert("Please enter both source and destination.");
+            return;
+        }          
         ws.current?.send(JSON.stringify(message));
     };
 
