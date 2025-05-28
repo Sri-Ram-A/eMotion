@@ -5,3 +5,5 @@ Django
 djangorestframework
 colorama
 djangorestframework-simplejwt
+django-cors-headers
+loguru

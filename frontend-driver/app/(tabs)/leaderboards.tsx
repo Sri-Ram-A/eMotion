@@ -1,12 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { View, Text, StyleSheet, ActivityIndicator,FlatList } from "react-native";
 import handleSubmit from "@/services/routes";
 import { IDContext } from "@/Context";
 import * as types from "@/types";
 
 const Profile = () => {
-  const { id,setId } = useContext(IDContext);
-  const [profile, setProfile] = useState<types.RiderProfile | null>(null);
+  const { id, setId } = useContext(IDContext);
+  const [drivers,setDrivers] = useState<types.DriverProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -14,9 +14,8 @@ const Profile = () => {
     const fetchProfile = async () => {
       try {
         if (!id) return;
-        
-        const data = await handleSubmit(null as unknown as void, 'profile/', 'GET', id);
-        setProfile(data);
+        const data = await handleSubmit(null as unknown as void, 'leaderboards/', 'GET');
+        setDrivers(data);
       } catch (err) {
         setError(err instanceof Error ? err.message : "Failed to load profile");
       } finally {
@@ -26,30 +25,29 @@ const Profile = () => {
 
     fetchProfile();
   }, [id]);
-
-  const renderField = (label: string, value?: string | number) => 
-    value !== undefined ? (
-      <Text style={styles.field}>
-        <Text style={styles.label}>{label}: </Text>
-        {value}
-      </Text>
-    ) : null;
+  const renderDriver = ({ item }: { item: types.DriverProfile }) => (
+    <View style={styles.rideCard}>
+      <Text style={styles.rideTitle}>Ride #{item.id}</Text>
+      <Text>Name: {item.name}</Text>
+      <Text>Email: {item.email}</Text>
+      <Text>Phone Number: {item.phone_number} km</Text>
+      <Text>Rating❤️: {item.rating} </Text>
+    </View>
+  );
 
   if (loading) return <ActivityIndicator size="large" style={styles.loader} />;
   if (error) return <Text style={styles.error}>Error: {error}</Text>;
-  if (!profile) return <Text style={styles.noData}>No profile data available</Text>;
+  if (drivers.length === 0) return <Text style={styles.noData}>No Drivers found in leaderboard</Text>;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Driver Profile</Text>
-      
-      <View style={styles.section}>
-        <Text style={styles.sectionHeader}>Basic Information</Text>
-        {renderField("Name", profile.name)}
-        {renderField("Email", profile.email)}
-        {renderField("Phone", profile.phone_number)}
-      </View>
-
+      <Text style={styles.header}>Leaderboard</Text>
+      <FlatList //HAs inbuilt lazy loading
+        data={drivers}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderDriver}
+        contentContainerStyle={styles.listContainer}
+      />
     </View>
   );
 };
@@ -65,20 +63,19 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     marginBottom: 20,
   },
-  section: {
-    marginBottom: 20,
+  rideCard: {
+    backgroundColor: '#f3f4f6',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
   },
-  sectionHeader: {
+  rideTitle: {
     fontSize: 18,
     fontWeight: '600',
-    marginBottom: 10,
+    marginBottom: 4,
   },
-  field: {
-    marginBottom: 5,
-  fontSize: 16,
-  },
-  label: {
-    fontWeight: '500',
+  listContainer: {
+    paddingBottom: 20,
   },
   loader: {
     flex: 1,

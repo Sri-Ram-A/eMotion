@@ -3,6 +3,7 @@ import React from 'react';
 import { IDProvider } from '@/Context';
 
 export default function RootLayout() {
+  
   return (
     <IDProvider>
       <Stack>

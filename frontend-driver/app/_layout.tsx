@@ -1,5 +1,6 @@
 import { Stack } from 'expo-router';
 import React from 'react';
+import { SafeAreaView, SafeAreaProvider } from 'react-native-safe-area-context';
 import { IDProvider } from '@/Context';
 
 export default function RootLayout() {
@@ -26,6 +27,8 @@ export default function RootLayout() {
             headerShown: false,
           }}
         />
+
+        
         <Stack.Screen name="+not-found" />
       </Stack>
     </IDProvider>

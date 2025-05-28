@@ -6,10 +6,10 @@ export default function TabLayout() {
         <Tabs
             screenOptions={{
                 tabBarActiveTintColor: '#ffd33d',
-                headerStyle: {backgroundColor: '#25292e'},
+                headerStyle: { backgroundColor: '#25292e' },
                 headerShadowVisible: false,
                 headerTintColor: '#fff',
-                tabBarStyle: {backgroundColor: '#25292e'},
+                tabBarStyle: { backgroundColor: '#25292e' },
             }}
         >
             <Tabs.Screen
@@ -26,10 +26,41 @@ export default function TabLayout() {
                 options={{
                     title: 'Profile',
                     tabBarIcon: ({ color, focused }) => (
-                        <Ionicons name={focused ? 'information-circle' : 'information-circle-outline'} color={color} size={24} />
+                        <Ionicons
+                            name={focused ? 'person' : 'person-outline'}
+                            color={color}
+                            size={24}
+                        />
                     ),
                 }}
             />
+            <Tabs.Screen
+                name="history"
+                options={{
+                    title: 'History',
+                    tabBarIcon: ({ color, focused }) => (
+                        <Ionicons
+                            name={focused ? 'time' : 'time-outline'}
+                            color={color}
+                            size={24}
+                        />
+                    ),
+                }}
+            />
+            <Tabs.Screen
+                name="favourites"
+                options={{
+                    title: 'Favourites',
+                    tabBarIcon: ({ color, focused }) => (
+                        <Ionicons
+                            name={focused ? 'heart' : 'heart-outline'}
+                            color={color}
+                            size={24}
+                        />
+                    ),
+                }}
+            />
+
         </Tabs>
     );
 }

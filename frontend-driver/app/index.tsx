@@ -1,5 +1,5 @@
 import React, { useState, useContext, useEffect } from "react"
-import { Text, TextInput, View, Button, ScrollView, ActivityIndicator, Alert } from "react-native"
+import { Text, TextInput, Button, ScrollView, ActivityIndicator, Alert } from "react-native"
 import { router } from 'expo-router';
 import handleSubmit from '@/services/routes';
 import * as types from "@/types"

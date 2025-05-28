@@ -38,18 +38,20 @@ class RiderProfile(APIView):
 
 class RiderHistory(APIView):
     def get(self,request,pk):
-        print(f"Received pk: {pk}") 
-        print(f"datatype pk: {type(pk)}") 
         rider_rides = models.RideDetails.objects.filter(rider=pk)
-        for ride in rider_rides:
-            print(ride.__dict__)
         serializer=serializers.RiderHistorySerializer(rider_rides,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class Favourites(APIView):
     def get(self,request,pk):
         rider_rides = models.RideDetails.objects.filter(rider=pk).filter(favourite=1)
-        serializer=serializers.RiderFavouriteSerializer(rider_rides,many=True)
+        seen_drivers = set()
+        unique_rides = []
+        for ride in rider_rides:
+            if ride.driver not in seen_drivers:
+                seen_drivers.add(ride.driver)
+                unique_rides.append(ride)
+        serializer = serializers.RiderFavouriteSerializer(unique_rides, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class DriverRegister(APIView):
@@ -84,6 +86,10 @@ class DriverHistory(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class Leaderboards(APIView):
-    pass
+    def get(self,request):
+        drivers=models.Driver.objects.all()
+        serializer=serializers.DriverProfileSerializer(drivers,many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    
 class Demand(APIView):
     pass

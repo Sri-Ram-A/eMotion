@@ -2,20 +2,34 @@ import * as api from './api';
 import * as types from '@/types'
 
 type RouteConfig = {
-  'login/': types.LoginFormData;
   'register/': types.RegisterFormData;
+  'login/': types.LoginFormData;
+  'profile/': void;
+  'history/': void;
+  'leaderboards/': void;
+  'demand/': void;
+  '': void;
 }
 
 export default async function handleSubmit<T extends keyof RouteConfig>(
-  formData: RouteConfig[T],
-  route: T
+  formData:RouteConfig[T],
+  route: T,
+  method: 'GET' | 'POST' = 'POST',
+  pk?: String  // Optional primary key for GET requests
 ) {
   try {
-    const response = await fetch(api.BASE_API_URL + route, {
-      method: 'POST',
+    let url = api.BASE_API_URL + route;
+    // Append primary key to URL if provided 
+    if (pk !== undefined) {
+      url += `${pk}/`;
+    }
+
+    const response = await fetch(url, {
+      method: method,
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(formData)
+      body: method === 'POST' ? JSON.stringify(formData) : undefined
     });
+
     if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
     const data = await response.json();
     console.log(data);
@@ -25,6 +39,3 @@ export default async function handleSubmit<T extends keyof RouteConfig>(
     throw error;
   }
 }
-
-
-

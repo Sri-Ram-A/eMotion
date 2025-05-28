@@ -1,9 +1,7 @@
 from channels.generic.websocket import AsyncWebsocketConsumer
-import json
-from api import models
-from api import serializers
+from api import models, serializers
 from loguru import logger
-
+import json
 #connect with postamn using this url man
 #ws://localhost:8000/ws/rider/<put some primary key>
 #You must add CHANNEL_LAYERS in settings to allow group communication
@@ -17,103 +15,121 @@ synchronous code.
 
 class Rider(AsyncWebsocketConsumer):
     async def connect(self):
-        """When frontend connects with rider"""
-        await self.accept()
         self.rider_id = self.scope['url_route']['kwargs']['rider_id']
-        self.group_name='riders'
-        await self.channel_layer.group_add(self.group_name,self.channel_name)
+        self.group_name = "riders"
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        await self.accept()
 
-        rider=await models.Rider.objects.aget(id=self.rider_id)
-        serializer=serializers.RiderRegisterSerializer(rider)
-        self.rider_details=dict(serializer.data)
-        #in this particular group #add this particular channel
-        logger.info(f"[RIDER] Connected, ID: {self.rider_id}")
-        logger.debug(f"[RIDER] Details: {self.rider_details}")
+        rider = await models.Rider.objects.aget(id=self.rider_id)
+        self.rider_details = dict(serializers.RiderRegisterSerializer(rider).data)
 
-    async def receive(self,text_data=None):
-        """Receive message from Rider frontend."""
-        frontend_message=json.loads(text_data)
-        message=self.rider_details | frontend_message
-        message["from"]=self.channel_name
-        logger.info(f"[RIDER] Sent message: {message}")
-        '''From rider channel sends request to driver group'''
-        await self.channel_layer.group_send(
-            "drivers",{
-                "type":"request_driver", #Calls `request_driver` on Driver
-                "message":message
-            }
-        )
+        logger.info(f"[RIDER CONNECTED] ID: {self.rider_id}")
+        logger.debug(f"[RIDER DETAILS] {self.rider_details}")
 
-    async def request_accepted(self,event):
-        """Receive response from driver (via direct send)."""
-        logger.success(f"[RIDER] Got response from DRIVER → {event['message']}")      
-        await self.send(text_data=json.dumps(event['message']))
+    async def receive(self, text_data):
+        data = json.loads(text_data)
 
-    async def disconnect(self,close_code=None):
+        if data.get("review"):
+            logger.info(f"[RIDER REVIEW RECEIVED] {data}")
+            rider = await models.Rider.objects.aget(id=self.rider_id)
+            driver = await models.Driver.objects.aget(id=data.get("driver_id",""))
+            await models.RideDetails.objects.acreate(
+                rider=rider,
+                driver=driver,
+                source=data.get("source", ""),
+                destination=data.get("destination", ""),
+                estimated_duration='',
+                distance='',
+                price='',
+                payment_mode=data.get("payment_mode", "cash"),
+                status=False,
+                review_cleanliness=data.get("review_cleanliness", False),
+                review_discipline=data.get("review_discipline", False),
+                review_friendly=data.get("review_friendly", False),
+                review_safety=data.get("review_safety", False),
+                review_arrive_on_time=data.get("review_arrive_on_time", False),
+                ride_rating=data.get("ride_rating", 2),
+                favourite=data.get("favourite",0)
+            )
+        else:
+            # Rider sends request
+            ride_request = {**self.rider_details, **data, "from": self.channel_name}
+            logger.info(f"[RIDER REQUEST SENT] {ride_request}")
+
+            await self.channel_layer.group_send("drivers", {
+                "type": "receive_ride_request",
+                "message": ride_request
+            })
+
+    async def request_accepted(self, event):
+        logger.success(f"[RIDER MATCHED] DRIVER RESPONSE: {event['message']}")
+        await self.send(text_data=json.dumps(event["message"]))
+
+    async def ride_completed(self, event):
+        await self.send(text_data=json.dumps(event["message"]))
+
+    async def disconnect(self, close_code):
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
-        logger.warning("[RIDER] Disconnected")
+        logger.warning("[RIDER DISCONNECTED]")
+
 
 class Driver(AsyncWebsocketConsumer):
     async def connect(self):
-        '''Connect from driver frontend'''
-        await self.accept()
-        self.group_name='drivers'
         self.driver_id = self.scope['url_route']['kwargs']['driver_id']
-        await self.channel_layer.group_add(self.group_name,self.channel_name )
-        #in this particular group #add this particular channel
-        driver=await models.Driver.objects.aget(id=self.driver_id)
-        serializer=serializers.DriverRegisterSerializer(driver)
-        self.driver_details=dict(serializer.data)
-        self.rider_channel_name=None
-        logger.info(f"[DRIVER] Connected, ID: {self.driver_id}")
-        logger.debug(f"[DRIVER] Details: {self.driver_details}")
-        
+        self.group_name = "drivers"
+        self.rider_channel_name = None
+        await self.channel_layer.group_add(self.group_name, self.channel_name)
+        await self.accept()
 
-    async def receive(self,text_data=None):
-        """Receive message from Driver frontend."""
-        frontend_message=json.loads(text_data)
-        logger.info(f"[DRIVER] Sent message: {frontend_message}")
+        driver = await models.Driver.objects.aget(id=self.driver_id)
+        self.driver_details = dict(serializers.DriverRegisterSerializer(driver).data)
+        self.driver_details["available"] = "1"
 
-        if frontend_message.get("ready")=="1":
-            message=self.driver_details | { "from":self.channel_name }
-            self.driver_details["available"]= "0" #that is he is ready to accept
-            '''Driver channel is sending to Rider channel'''
+        logger.info(f"[DRIVER CONNECTED] ID: {self.driver_id}")
+        logger.debug(f"[DRIVER DETAILS] {self.driver_details}")
+
+    async def receive(self, text_data):
+        data = json.loads(text_data)
+        logger.info(f"[DRIVER MESSAGE] {data}")
+
+        if data.get("ready") == "1":
+            self.driver_details["available"] = "0"
+            message = {**self.driver_details, "from": self.channel_name}
             if self.rider_channel_name:
-                await self.channel_layer.send(
-                    self.rider_channel_name,{
-                        "type":"request_accepted",
-                        "message":message
-                    }
-                )
-                message={"ride_already_taken":"1"}
-                await self.channel_layer.group_send(
-                    self.group_name,
-                    {
-                        "type": "ride_taken_broadcast",
-                        "message": message
-                    }
-    )
-        elif frontend_message.get("ready")=="0":#that is he sends message from frontend that his ride completed
-            self.driver_details["available"]="1" #he is ready for other rides
-            logger.info(f"[DRIVER] Ride completed. Driver {self.driver_id} now available.")
+                # Notify matched rider
+                await self.channel_layer.send(self.rider_channel_name, {
+                    "type": "request_accepted",
+                    "message": message
+                })
+                # Notify other drivers
+                await self.channel_layer.group_send(self.group_name, {
+                    "type": "notify_ride_taken",
+                    "message": {"ride_already_taken": "1"}
+                })
 
-    async def request_driver(self, event):
-        """Triggered when a rider sends a request."""
-        if str(self.driver_details["available"]) == "1":
-            await self.send(text_data=json.dumps(event['message']))
-            self.rider_channel_name=event["message"]["from"]
-             #convert a Python dict into a JSON string
-            logger.success(f"[DRIVER] Got request from RIDER → {event['message']}")
-        else:
-            return
-        
-    async def ride_taken_broadcast(self, event):
-    # Notify everyone except yourself
+        elif data.get("ready") == "0":
+            self.driver_details["available"] = "1"
+            # Notify rider to leave a review
+            if self.rider_channel_name:
+                await self.channel_layer.send(self.rider_channel_name, {
+                    "type": "ride_completed",
+                    "message": {"review": "1", "driver_id": self.driver_id}
+                })
+
+            logger.info(f"[DRIVER COMPLETED RIDE] ID: {self.driver_id}, Available for next ride.")
+
+    async def receive_ride_request(self, event):
+        if self.driver_details.get("available") == "1":
+            self.rider_channel_name = event["message"]["from"]
+            await self.send(text_data=json.dumps(event["message"]))
+            logger.success(f"[DRIVER RECEIVED REQUEST] {event['message']}")
+
+    async def notify_ride_taken(self, event):
+        # Notify only other drivers
         if self.channel_name != self.rider_channel_name:
             await self.send(text_data=json.dumps(event["message"]))
 
-
-    async def disconnect(self,close_code=None):
-        self.driver_details["available"]=="1"
+    async def disconnect(self, close_code):
+        self.driver_details["available"] = "1"
         await self.channel_layer.group_discard(self.group_name, self.channel_name)
-        logger.warning("[DRIVER] Disconnected")
+        logger.warning("[DRIVER DISCONNECTED]")
