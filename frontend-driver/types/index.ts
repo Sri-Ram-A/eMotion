@@ -35,5 +35,8 @@ export interface DriverProfile {
     destination_longitude: number;
     destination_details: string;
     from: string;
+    price:number;
+    estimated_duration:number,
+    distance:number
   };
   

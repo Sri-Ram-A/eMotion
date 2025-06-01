@@ -1,4 +1,4 @@
-import { Text, View, Button, Modal, Alert, StyleSheet, ScrollView } from 'react-native';
+import { Text, View, Button, Modal, Alert, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import * as api from '@/services/api';
 import { IDContext } from '@/Context';
@@ -13,7 +13,6 @@ export default function AboutScreen() {
 
   const connectWebSocket = () => {
     ws.current = new WebSocket(api.SOCKET + id);
-
     ws.current.onopen = () => {
       console.log("WebSocket connected");
     };
@@ -28,7 +27,7 @@ export default function AboutScreen() {
           setModalVisible(false);
           return;
         }
-        setRiderMessage(parsed.message || e.data);
+        setRiderMessage(parsed);
         setModalVisible(true);
       } catch (err) {
         console.log("Non-JSON or parse error:", err);
@@ -53,7 +52,6 @@ export default function AboutScreen() {
     };
   }, []);
 
-
   const handleAcceptRide = () => {
     ws.current?.send(JSON.stringify({ ready: "1" }));
     setRiderMessage("Ride accepted ✅");
@@ -71,7 +69,11 @@ export default function AboutScreen() {
       contentContainerStyle={styles.scrollContainer}
     >
       <View style={styles.container}>
-        <Text style={styles.statusText}>You are Now Online</Text>
+        <View style={styles.statusCard}>
+          <View style={styles.statusIndicator} />
+          <Text style={styles.statusText}>You are Now Online</Text>
+          <Text style={styles.statusSubtext}>Ready to accept ride requests</Text>
+        </View>
 
         {/* Modal for ride request */}
         <Modal
@@ -85,43 +87,63 @@ export default function AboutScreen() {
         >
           <View style={styles.modalBackground}>
             <View style={styles.modalView}>
-              <Text style={styles.modalTitle}>Incoming Ride Request</Text>
+              <Text style={styles.modalTitle}>🚗 Incoming Ride Request</Text>
 
               {typeof riderMessage === 'object' && (
-                <>
-                  <Text style={styles.label}>Name:</Text>
-                  <Text style={styles.value}>{riderMessage.name}</Text>
+                <View style={styles.rideDetails}>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.label}>👤 Name</Text>
+                    <Text style={styles.value}>{riderMessage.name}</Text>
+                  </View>
 
-                  <Text style={styles.label}>Phone:</Text>
-                  <Text style={styles.value}>{riderMessage.phone_number}</Text>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.label}>📱 Phone</Text>
+                    <Text style={styles.value}>{riderMessage.phone_number}</Text>
+                  </View>
 
-                  <Text style={styles.label}>Source:</Text>
-                  <Text style={styles.value}>{riderMessage.source_details}</Text>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.label}>📍 From</Text>
+                    <Text style={styles.value}>{riderMessage.source_details}</Text>
+                  </View>
 
-                  <Text style={styles.label}>Destination:</Text>
-                  <Text style={styles.value}>{riderMessage.destination_details}</Text>
-                </>
+                  <View style={styles.detailRow}>
+                    <Text style={styles.label}>🎯 To</Text>
+                    <Text style={styles.value}>{riderMessage.destination_details}</Text>
+                  </View>
+
+                  <View style={styles.priceDistanceRow}>
+                    <View style={styles.priceDistanceItem}>
+                      <Text style={styles.label}>📏 Distance</Text>
+                      <Text style={styles.highlightValue}>{riderMessage.distance}</Text>
+                    </View>
+                    <View style={styles.priceDistanceItem}>
+                      <Text style={styles.label}>💰 Price</Text>
+                      <Text style={styles.priceValue}>{riderMessage.price}</Text>
+                    </View>
+                  </View>
+                </View>
               )}
               {typeof riderMessage === 'string' && (
                 <Text style={styles.modalText}>{riderMessage}</Text>
               )}
 
               <View style={styles.buttonContainer}>
-                <Button
+                <TouchableOpacity
+                  style={styles.acceptButton}
                   onPress={handleAcceptRide}
-                  title="Accept Ride"
-                  color="#10b981" // Emerald green
-                />
-                <View style={{ height: 10 }} />
-                <Button
+                >
+                  <Text style={styles.acceptButtonText}>Accept Ride</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                  style={styles.rejectButton}
                   onPress={handleRejectRide}
-                  title="Reject Ride"
-                  color="#ef4444" // Rose red
-                />
+                >
+                  <Text style={styles.rejectButtonText}>Reject</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
-
         </Modal>
 
         {/* Modal for ride in progress */}
@@ -135,19 +157,23 @@ export default function AboutScreen() {
           }}
         >
           <View style={styles.fullscreenContainer}>
-            <Text style={styles.statusText}>Ride In Progress 🚗💨</Text>
-            <View style={{ marginBottom: 20 }}>
-              <Text style={{ color: '#fff' }}>Display map or image here 📍</Text>
+            <View style={styles.rideProgressCard}>
+              <Text style={styles.rideProgressTitle}>Ride In Progress 🚗💨</Text>
+              <View style={styles.mapPlaceholder}>
+                <Text style={styles.mapPlaceholderText}>📍 Map View</Text>
+                <Text style={styles.mapSubtext}>Navigation will appear here</Text>
+              </View>
+              <TouchableOpacity
+                style={styles.completeButton}
+                onPress={() => {
+                  ws.current?.send(JSON.stringify({ ready: "0" }));
+                  setRideInProgress(false);
+                  setRiderMessage("Waiting for next... 🕐");
+                }}
+              >
+                <Text style={styles.completeButtonText}>Complete Ride</Text>
+              </TouchableOpacity>
             </View>
-            <Button
-              title="Complete Ride"
-              color="#10b981"
-              onPress={() => {
-                ws.current?.send(JSON.stringify({ ready: "0" }));
-                setRideInProgress(false);
-                setRiderMessage("Waiting for next... 🕐");
-              }}
-            />
           </View>
         </Modal>
       </View>
@@ -161,65 +187,211 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    backgroundColor: '#111827',
+    backgroundColor: '#f8fafc',
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 40,
+    paddingHorizontal: 20,
+  },
+  statusCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 16,
+    padding: 32,
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 4,
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  statusIndicator: {
+    width: 12,
+    height: 12,
+    borderRadius: 6,
+    backgroundColor: '#10b981',
+    marginBottom: 16,
   },
   statusText: {
-    fontSize: 18,
-    color: '#ffffff',
-    marginBottom: 20,
+    fontSize: 20,
+    fontWeight: '600',
+    color: '#1e293b',
+    marginBottom: 8,
   },
-  modalText: {
-    fontSize: 16,
-    marginBottom: 20,
-    textAlign: 'center',
-  },
-  fullscreenContainer: {
-    flex: 1,
-    backgroundColor: '#1f2937',
-    justifyContent: 'center',
-    alignItems: 'center',
-    padding: 24,
+  statusSubtext: {
+    fontSize: 14,
+    color: '#64748b',
   },
   modalBackground: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.8)', // Dim black backdrop
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   modalView: {
-    backgroundColor: '#ffffff', // White modal
-    borderRadius: 16,
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
     padding: 24,
-    width: '85%',
+    width: '90%',
+    maxWidth: 400,
     shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.3,
-    shadowRadius: 8,
-    elevation: 10,
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 16,
   },
   modalTitle: {
-    fontSize: 20,
-    fontWeight: '600',
-    marginBottom: 16,
-    color: '#111827',
+    fontSize: 22,
+    fontWeight: '700',
+    marginBottom: 24,
+    color: '#1e293b',
     textAlign: 'center',
+  },
+  rideDetails: {
+    marginBottom: 24,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    paddingVertical: 12,
+    borderBottomWidth: 1,
+    borderBottomColor: '#f1f5f9',
+  },
+  priceDistanceRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: 16,
+    paddingTop: 16,
+    borderTopWidth: 2,
+    borderTopColor: '#e2e8f0',
+  },
+  priceDistanceItem: {
+    flex: 1,
+    alignItems: 'center',
   },
   label: {
     fontSize: 14,
-    fontWeight: 'bold',
-    marginTop: 8,
-    color: '#374151',
-  },
-  value: {
-    fontSize: 14,
-    color: '#1f2937',
+    fontWeight: '500',
+    color: '#64748b',
     marginBottom: 4,
   },
+  value: {
+    fontSize: 15,
+    color: '#1e293b',
+    fontWeight: '400',
+    textAlign: 'right',
+    flex: 1,
+    marginLeft: 16,
+  },
+  highlightValue: {
+    fontSize: 16,
+    color: '#1e293b',
+    fontWeight: '600',
+  },
+  priceValue: {
+    fontSize: 18,
+    color: '#059669',
+    fontWeight: '700',
+  },
+  modalText: {
+    fontSize: 16,
+    marginBottom: 20,
+    textAlign: 'center',
+    color: '#1e293b',
+  },
   buttonContainer: {
-    marginTop: 20,
+    flexDirection: 'row',
+    gap: 12,
+  },
+  acceptButton: {
+    flex: 1,
+    backgroundColor: '#10b981',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+  },
+  acceptButtonText: {
+    color: '#ffffff',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  rejectButton: {
+    flex: 1,
+    backgroundColor: '#f1f5f9',
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#e2e8f0',
+  },
+  rejectButtonText: {
+    color: '#64748b',
+    fontSize: 16,
+    fontWeight: '600',
+  },
+  fullscreenContainer: {
+    flex: 1,
+    backgroundColor: '#f8fafc',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 24,
+  },
+  rideProgressCard: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 32,
+    width: '100%',
+    alignItems: 'center',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.15,
+    shadowRadius: 12,
+    elevation: 8,
+  },
+  rideProgressTitle: {
+    fontSize: 24,
+    fontWeight: '700',
+    color: '#1e293b',
+    marginBottom: 32,
+    textAlign: 'center',
+  },
+  mapPlaceholder: {
+    backgroundColor: '#f1f5f9',
+    borderRadius: 16,
+    padding: 48,
+    marginBottom: 32,
+    alignItems: 'center',
+    width: '100%',
+    borderWidth: 2,
+    borderColor: '#e2e8f0',
+    borderStyle: 'dashed',
+  },
+  mapPlaceholderText: {
+    fontSize: 18,
+    color: '#64748b',
+    fontWeight: '600',
+    marginBottom: 8,
+  },
+  mapSubtext: {
+    fontSize: 14,
+    color: '#94a3b8',
+  },
+  completeButton: {
+    backgroundColor: '#10b981',
+    paddingVertical: 18,
+    paddingHorizontal: 48,
+    borderRadius: 12,
+    shadowColor: '#10b981',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
+  completeButtonText: {
+    color: '#ffffff',
+    fontSize: 18,
+    fontWeight: '700',
   },
 });
-

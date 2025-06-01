@@ -27,7 +27,7 @@ SECRET_KEY = "django-insecure-66g_ybia3u1t7s57ac*8ile$ub4ib^k=i3g)642acdb&a#(t*v
 ### To view the status codes imn DRF
 DEBUG = True 
 # DEBUG = False
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 
 # Application definition
