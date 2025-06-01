@@ -1,4 +1,4 @@
-import { Text, View, Modal, ScrollView, RefreshControl, TextInput, Button, StyleSheet } from 'react-native';
+import { Text, View, Modal, ScrollView, TextInput, Button, StyleSheet } from 'react-native';
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import * as api from '@/services/api';
 import { IDContext } from '@/Context';
@@ -17,7 +17,7 @@ function CheckBox({ label, value, onChange }: { label: string, value: boolean, o
 }
 
 export default function AboutScreen() {
-    const [refreshing, setRefreshing] = React.useState(false);
+
     const [source, setSource] = useState('');
     const [destination, setDestination] = useState('');
     const [driverMessage, setDriverMessage] = useState('');
@@ -32,12 +32,6 @@ export default function AboutScreen() {
     const [favourite, setFavourite] = useState(false);
     const [rideCompleted, setRideCompleted] = useState(false);
 
-    const onRefresh = React.useCallback(() => {
-        setRefreshing(true);
-        setTimeout(() => {
-            setRefreshing(false);
-        }, 2000);
-    }, []);
     const ws = useRef<WebSocket | null>(null);
     const { id } = useContext(IDContext);
 
@@ -116,9 +110,6 @@ export default function AboutScreen() {
         <View style={styles.mainContainer}>
             <ScrollView
                 contentContainerStyle={styles.scrollContainer}
-                refreshControl={
-                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-                }
             >
                 <View style={styles.contentContainer}>
                     <TextInput

@@ -21,4 +21,19 @@ export interface DriverProfile {
     vehicle_year?:string;
     rating?: number;
   }
+  export type RiderData = {
+    id: number;
+    name: string;
+    email: string;
+    phone_number: string;
+    source: string;
+    destination: string;
+    source_latitude: number;
+    source_longitude: number;
+    source_details: string;
+    destination_latitude: number;
+    destination_longitude: number;
+    destination_details: string;
+    from: string;
+  };
   
