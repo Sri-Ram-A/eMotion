@@ -41,7 +41,7 @@ function CheckBox({ label, value, onChange }: { label: string, value: boolean, o
 export default function AboutScreen() {
     const [source, setSource] = useState('');
     const [destination, setDestination] = useState('');
-    const [driverMessage, setDriverMessage] = useState<types.DriverDetails | string>('');
+    const [driverMessage, setDriverMessage] = useState<types.TwoDriverDetails | string>('');
     const [driver_id, setDriverId] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [ride_rating, setRideRating] = useState("2");
@@ -54,12 +54,11 @@ export default function AboutScreen() {
     const [rideCompleted, setRideCompleted] = useState(false);
     const [priceDetails, setPriceDetails] = useState<types.RiderData | string>("");
     const [showRatingModal, setShowRatingModal] = useState(false);
-
     const ws = useRef<WebSocket | null>(null);
     const { id } = useContext(IDContext);
 
     useEffect(() => {
-        ws.current = new WebSocket(api.SOCKET + id);
+        ws.current = new WebSocket(api.SOCKET +"split_rides/"+ id);
 
         ws.current.onopen = () => {
             console.log("WebSocket connected");
@@ -74,11 +73,12 @@ export default function AboutScreen() {
                 }
                 else if (parsed.review === "1") {
                     setDriverMessage("Ride Completed");
+                    setDriverId(parsed.driver_id);
                     setRideCompleted(true);
                     setShowRatingModal(true); // Show rating modal when ride is completed
                 } else {
                     setDriverMessage(parsed || "No message provided.");
-                    setDriverId(parsed.id);
+                    setDriverId(parsed.driver_id);
                     setRideCompleted(false);
                     setModalVisible(true); // Show driver details modal
                 }
@@ -119,7 +119,6 @@ export default function AboutScreen() {
         const message = { "price": "1", source, destination };
         ws.current?.send(JSON.stringify(message));
     };
-
     const handleReviewSubmit = () => {
         const message = {
             "review": "1",
@@ -211,114 +210,153 @@ export default function AboutScreen() {
             </ScrollView>
 
             {/* Driver Details Modal */}
-            <Modal
-                animationType="slide"
-                transparent={false}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Driver Found!</Text>
-                        <Text style={styles.modalSubtitle}>Your driver details</Text>
+<Modal
+    animationType="slide"
+    transparent={false}
+    visible={modalVisible}
+    onRequestClose={() => setModalVisible(false)}
+>
+    <View style={styles.modalContainer}>
+        <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Drivers Found!</Text>
+            <Text style={styles.modalSubtitle}>Your drivers details</Text>
+        </View>
+        
+        {driverMessage && typeof driverMessage === 'object' && (
+            <ScrollView contentContainerStyle={styles.modalScrollContent}>
+                {/* Driver 1 Card */}
+                <View style={[styles.driverCard, { marginBottom: 24 }]}>
+                    <Text style={styles.driverCardTitle}>Driver 1</Text>
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Name:</Text>
+                        <Text style={styles.detailValue}>{driverMessage.driver1.name}</Text>
                     </View>
                     
-                    {driverMessage && typeof driverMessage === 'object' && (
-                        <View style={styles.driverCard}>
-                            <View style={styles.detailRow}>
-                                <Text style={styles.detailLabel}>Name:</Text>
-                                <Text style={styles.detailValue}>{driverMessage.name}</Text>
-                            </View>
-                            
-                            <View style={styles.detailRow}>
-                                <Text style={styles.detailLabel}>Phone:</Text>
-                                <Text style={styles.detailValue}>{driverMessage.phone_number}</Text>
-                            </View>
-                            
-                            <View style={styles.detailRow}>
-                                <Text style={styles.detailLabel}>Rating:</Text>
-                                <View style={styles.ratingContainer}>
-                                    <Text style={styles.ratingText}>{driverMessage.rating}</Text>
-                                    <Text style={styles.ratingIcon}>★</Text>
-                                </View>
-                            </View>
-                            
-                            <View style={styles.detailRow}>
-                                <Text style={styles.detailLabel}>Vehicle:</Text>
-                                <Text style={styles.detailValue}>{driverMessage.vehicle_plate}</Text>
-                            </View>
-                            
-                            <View style={styles.detailRow}>
-                                <Text style={styles.detailLabel}>Email:</Text>
-                                <Text style={styles.detailValue}>{driverMessage.email}</Text>
-                            </View>
-                        </View>
-                    )}
-                    
-                    <TouchableOpacity
-                        style={styles.closeButton}
-                        onPress={() => setModalVisible(false)}
-                    >
-                        <Text style={styles.closeButtonText}>Close</Text>
-                    </TouchableOpacity>
-                </View>
-            </Modal>
-
-            {/* Rating Modal */}
-            <Modal
-                animationType="slide"
-                transparent={false}
-                visible={showRatingModal}
-                onRequestClose={() => setShowRatingModal(false)}
-            >
-                <View style={styles.modalContainer}>
-                    <View style={styles.modalHeader}>
-                        <Text style={styles.modalTitle}>Rate Your Experience</Text>
-                        <Text style={styles.modalSubtitle}>How was your ride?</Text>
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Phone:</Text>
+                        <Text style={styles.detailValue}>{driverMessage.driver1.phone_number}</Text>
                     </View>
                     
-                    <ScrollView contentContainerStyle={styles.modalScrollContent}>
-                        <View style={styles.ratingInputContainer}>
-                            <Text style={styles.inputLabel}>Rating (1-5)</Text>
-                            <TextInput
-                                style={styles.modalInput}
-                                placeholder="Enter 1-5"
-                                value={ride_rating}
-                                onChangeText={setRideRating}
-                                keyboardType="numeric"
-                                maxLength={1}
-                            />
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Rating:</Text>
+                        <View style={styles.ratingContainer}>
+                            <Text style={styles.ratingText}>{driverMessage.driver1.rating}</Text>
+                            <Text style={styles.ratingIcon}>★</Text>
                         </View>
-
-                        <Text style={styles.ratingTitle}>What was great about this ride?</Text>
-                        
-                        <View style={styles.checkboxGroup}>
-                            <CheckBox label="Cleanliness" value={review_cleanliness} onChange={setCleanliness} />
-                            <CheckBox label="Discipline" value={review_discipline} onChange={setDiscipline} />
-                            <CheckBox label="Friendly Driver" value={review_friendly} onChange={setFriendly} />
-                            <CheckBox label="Safe Driving" value={review_safety} onChange={setSafety} />
-                            <CheckBox label="Arrived on Time" value={review_arrive_on_time} onChange={setOnTime} />
-                            <CheckBox label="Add to Favorites" value={favourite} onChange={setFavourite} />
-                        </View>
-                        
-                        <View style={styles.modalButtonGroup}>
-                            <TouchableOpacity
-                                style={[styles.modalButton, styles.secondaryButton]}
-                                onPress={() => setShowRatingModal(false)}
-                            >
-                                <Text style={styles.buttonText}>Cancel</Text>
-                            </TouchableOpacity>
-                            
-                            <TouchableOpacity
-                                style={styles.modalButton}
-                                onPress={handleReviewSubmit}
-                            >
-                                <Text style={styles.buttonText}>Submit Review</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </ScrollView>
+                    </View>
+                    
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Vehicle:</Text>
+                        <Text style={styles.detailValue}>{driverMessage.driver1.vehicle_plate}</Text>
+                    </View>
+                    
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Email:</Text>
+                        <Text style={styles.detailValue}>{driverMessage.driver1.email}</Text>
+                    </View>
                 </View>
-            </Modal>
+
+                {/* Driver 2 Card */}
+                <View style={styles.driverCard}>
+                    <Text style={styles.driverCardTitle}>Driver 2</Text>
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Name:</Text>
+                        <Text style={styles.detailValue}>{driverMessage.driver2.name}</Text>
+                    </View>
+                    
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Phone:</Text>
+                        <Text style={styles.detailValue}>{driverMessage.driver2.phone_number}</Text>
+                    </View>
+                    
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Rating:</Text>
+                        <View style={styles.ratingContainer}>
+                            <Text style={styles.ratingText}>{driverMessage.driver2.rating}</Text>
+                            <Text style={styles.ratingIcon}>★</Text>
+                        </View>
+                    </View>
+                    
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Vehicle:</Text>
+                        <Text style={styles.detailValue}>{driverMessage.driver2.vehicle_plate}</Text>
+                    </View>
+                    
+                    <View style={styles.detailRow}>
+                        <Text style={styles.detailLabel}>Email:</Text>
+                        <Text style={styles.detailValue}>{driverMessage.driver2.email}</Text>
+                    </View>
+                </View>
+            </ScrollView>
+        )}
+        
+        <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setModalVisible(false)}
+        >
+            <Text style={styles.closeButtonText}>Close</Text>
+        </TouchableOpacity>
+    </View>
+</Modal>
+
+{/* Rating Modal */}
+<Modal
+    animationType="slide"
+    transparent={false}
+    visible={showRatingModal}
+    onRequestClose={() => setShowRatingModal(false)}
+>
+    <View style={styles.modalContainer}>
+        <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Rate Your Experience</Text>
+            {/* <Text style={styles.modalSubtitle}>
+                {driverMessage && typeof driverMessage === 'object' && 
+                    `How was your ride with ${driverMessage.driver1.name}?`}
+            </Text> */}
+        </View>
+        
+        <ScrollView contentContainerStyle={styles.modalScrollContent}>
+            <View style={styles.ratingInputContainer}>
+                <Text style={styles.inputLabel}>Rating (1-5)</Text>
+                <TextInput
+                    style={styles.modalInput}
+                    placeholder="Enter 1-5"
+                    value={ride_rating}
+                    onChangeText={setRideRating}
+                    keyboardType="numeric"
+                    maxLength={1}
+                />
+            </View>
+
+            <Text style={styles.ratingTitle}>What was great about {driverMessage && typeof driverMessage === 'object' ? driverMessage.driver1.name + "'s" : "this"} ride?</Text>
+            
+            <View style={styles.checkboxGroup}>
+                <CheckBox label="Cleanliness" value={review_cleanliness} onChange={setCleanliness} />
+                <CheckBox label="Discipline" value={review_discipline} onChange={setDiscipline} />
+                <CheckBox label="Friendly Driver" value={review_friendly} onChange={setFriendly} />
+                <CheckBox label="Safe Driving" value={review_safety} onChange={setSafety} />
+                <CheckBox label="Arrived on Time" value={review_arrive_on_time} onChange={setOnTime} />
+                <CheckBox label="Add to Favorites" value={favourite} onChange={setFavourite} />
+            </View>
+            
+            <View style={styles.modalButtonGroup}>
+                <TouchableOpacity
+                    style={[styles.modalButton, styles.secondaryButton]}
+                    onPress={() => setShowRatingModal(false)}
+                >
+                    <Text style={styles.buttonText}>Cancel</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
+                    style={styles.modalButton}
+                    onPress={handleReviewSubmit}
+                >
+                    <Text style={styles.buttonText}>Submit Review</Text>
+                </TouchableOpacity>
+            </View>
+        </ScrollView>
+    </View>
+</Modal>
         </View>
     );
 }
@@ -501,5 +539,14 @@ const styles = StyleSheet.create({
         borderRadius: 10,
         alignItems: 'center',
         flex: 1,
+    },
+    driverCardTitle: {
+        color: '#f8fafc',
+        fontSize: 18,
+        fontWeight: '600',
+        marginBottom: 16,
+        paddingBottom: 8,
+        borderBottomWidth: 1,
+        borderBottomColor: '#334155',
     },
 });

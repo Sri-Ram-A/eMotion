@@ -63,3 +63,7 @@ export interface FavouriteRide {
     rating?: number;
     from?:string;
   }
+  export interface TwoDriverDetails {
+    driver1:DriverDetails
+    driver2:DriverDetails
+  }

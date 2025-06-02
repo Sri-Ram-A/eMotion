@@ -3,9 +3,9 @@ from api import models, serializers
 from loguru import logger
 import json
 from . import helper
-import datetime
+from datetime import datetime,timedelta
 #connect with postamn using this url man
-#ws://localhost:8000/ws/rider/<put some primary key>
+#ws://localhost:8000/ws/rider/split_rides/<put some primary key>
 #You must add CHANNEL_LAYERS in settings to allow group communication
 #see ouput in terminal for clear understanding
 
@@ -73,8 +73,8 @@ class Rider(AsyncWebsocketConsumer):
             source_location_data=helper.get_address_details(data.get("source")) #gives address,latitude.longtude
             destination_location_data=helper.get_address_details(data.get("destination"))
             intermediate_location_data={
-                "latitude":"0.0.0.0",
-                "longitude":"0.0.0.0",
+                "latitude":0,
+                "longitude":0,
                 "details":"Intermediate,not yet written"
             }
             data["source_latitude"],data["source_longitude"],data["source_details"]=source_location_data.get("latitude"),source_location_data.get("longitude"),source_location_data.get("details")
@@ -105,7 +105,13 @@ class Rider(AsyncWebsocketConsumer):
             data2["price"] = self.price
             data2["estimated_duration"] = self.estimated_duration
             data2["distance"] = self.distance
-            data2["arrive_at"] = self.estimated_duration + datetime.now().time()
+            estimated_duration_minutes = self.estimated_duration
+            # Get the current time
+            current_time = datetime.now()
+            # Create a timedelta object for the estimated duration
+            duration_timedelta = timedelta(minutes=estimated_duration_minutes)
+            # Calculate the arrival time
+            data2["arrive_at"] = str((current_time + duration_timedelta).time())
             self.data2=data2.copy()
             ride_request = {**self.rider_details, **data2, "from": self.channel_name}
             await self.channel_layer.group_send("drivers", {
@@ -118,11 +124,12 @@ class Rider(AsyncWebsocketConsumer):
     async def request_accepted(self, event):
         logger.success(f"[RIDER MATCHED] DRIVER RESPONSE: {event['message']}")
         self.no_of_drivers+=1
+        print("NO OF DRIVERS",self.no_of_drivers)
         if self.no_of_drivers==1:
             self.driver1=event["message"]
         if self.no_of_drivers==2:
             self.driver2=event["message"]
-            await self.send(text_data=json.dumps({"driver1":self.driver1} | {"driver1":self.driver2}))
+            await self.send(text_data=json.dumps({"driver1":self.driver1,"driver2":self.driver2}))
 
     async def ride_completed(self, event):
         self.no_of_drivers=0
@@ -163,7 +170,6 @@ class Driver(AsyncWebsocketConsumer):
                     "type": "notify_ride_taken",
                     "message": {"ride_already_taken": "1"}
                 })
-
         elif data.get("ready") == "0":
             self.driver_details["available"] = "1"
             # Notify rider to leave a review
