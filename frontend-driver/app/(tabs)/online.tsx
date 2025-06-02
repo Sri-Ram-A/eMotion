@@ -35,11 +35,9 @@ export default function AboutScreen() {
         setModalVisible(true);
       }
     };
-
     ws.current.onerror = (e: Event) => {
       console.error("WebSocket error:", e);
     };
-
     ws.current.onclose = () => {
       console.log("WebSocket closed");
     };

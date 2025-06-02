@@ -1,0 +1,3 @@
+ngrok http --url=cub-true-shiner.ngrok-free.app http://127.0.0.1:8000/                                                                                                                                                                   
+first go and read api routes in driver and rider frontend
+if you want to upgrade expo version when it shows version error : follow as it is :https://docs.expo.dev/workflow/upgrading-expo-sdk-walkthrough/

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Tabs } from 'expo-router';
 import Ionicons from '@expo/vector-icons/Ionicons';
+
 export default function TabLayout() {
     return (
         <Tabs
@@ -60,7 +61,19 @@ export default function TabLayout() {
                     ),
                 }}
             />
-
+            {/* Exclude getDriver from the tab bar */}
+            <Tabs.Screen
+                name="getDriver"
+                options={{
+                    tabBarStyle: { display: 'none' }, // Hide this screen from the tab bar
+                }}
+            />
+            <Tabs.Screen
+                name="getSplitDriver"
+                options={{
+                    tabBarStyle: { display: 'none' }, // Hide this screen from the tab bar
+                }}
+            />
         </Tabs>
     );
 }

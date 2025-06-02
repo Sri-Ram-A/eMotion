@@ -5,7 +5,10 @@ export default function Index() {
   return (
     <View style={styles.container}>
       <Text style={styles.text}>Home screen</Text>
-      <Link href="./getDriver"><Text>Click here</Text></Link>
+      <Link href="./getDriver"><Text>Normal Rides</Text></Link>
+      <View>
+      <Link href="./getSplitDriver"><Text>Split Rides</Text></Link>
+      </View>
     </View>
   );
 }
