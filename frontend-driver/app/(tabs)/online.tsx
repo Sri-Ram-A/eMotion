@@ -3,7 +3,7 @@ import React, { useState, useEffect, useRef, useContext } from 'react';
 import * as api from '@/services/api';
 import { IDContext } from '@/Context';
 import * as types from "@/types"
-
+import styles from "../../styles/onlineStyle"; // 👈 updated import
 export default function AboutScreen() {
   const [riderMessage, setRiderMessage] = useState<types.RiderData | string>("Waiting for ride requests...");
   const ws = useRef<WebSocket | null>(null);
