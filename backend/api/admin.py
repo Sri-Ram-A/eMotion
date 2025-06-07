@@ -1,4 +1,5 @@
 from django.contrib import admin
+###BElow added by me fully
 from .models import Rider, Driver, RideDetails
 
 @admin.register(Rider)

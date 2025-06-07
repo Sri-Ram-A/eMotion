@@ -17,9 +17,10 @@ class Driver(models.Model):
     vehicle_year=models.CharField(max_length=4)
     vehicle_plate=models.CharField(max_length=10)
     driving_license=models.CharField(max_length=15)
-    rating=models.CharField(max_length=1,default=0)
-    earnings=models.CharField(default=0)
-    available=models.CharField(default="1")
+    rating = models.FloatField(default=0.0)
+    total_rides = models.FloatField(default=0)
+    total_rating = models.FloatField(default=0.0)
+    earnings = models.FloatField(default=0.0)
 
     def __str__(self):
         return f"{self.name}"
@@ -32,13 +33,13 @@ class RideDetails(models.Model):
     pickup_time=models.DateTimeField(auto_now_add=True)
     estimated_duration = models.CharField(max_length=3)
     distance = models.CharField(max_length=3)
-    price=models.CharField(max_length=4)
+    price = models.FloatField(default=0.0)
     payment_methods=[
         ("cash","rider paid driver by cash"),
         ("card","rider paid driver by card")
     ]
     payment_mode=models.CharField(choices=payment_methods)
-    ride_rating=models.CharField(1,default=2)
+    ride_rating = models.FloatField(default=0)
     review_cleanliness=models.BooleanField(default=False)
     review_discipline=models.BooleanField(default=False)
     review_friendly=models.BooleanField(default=False)

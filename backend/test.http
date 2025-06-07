@@ -49,7 +49,7 @@ Content-Type: application/json
 
 ###
 # Driver Profile (replace `<driver_pk>` with the actual driver PK)
-GET http://localhost:8000/api/driver/profile/5/
+GET http://localhost:8000/api/driver/profile/1/
 Accept: application/json
 
 ###

@@ -22,7 +22,7 @@ class Rider(AsyncWebsocketConsumer):
         await self.accept()
 
         rider = await models.Rider.objects.aget(id=self.rider_id)
-        self.rider_details = dict(serializers.RiderRegisterSerializer(rider).data)
+        self.rider_details = dict(serializers.RiderSerializer(rider).data)
         logger.info(f"[RIDER CONNECTED] ID: {self.rider_id}")
         logger.debug(f"[RIDER DETAILS] {self.rider_details}")
 
@@ -55,7 +55,7 @@ class Rider(AsyncWebsocketConsumer):
                 destination=data.get("destination", ""),
                 estimated_duration=self.estimated_duration,
                 distance=self.distance,
-                price=self.price,
+                price=float(self.price),
                 payment_mode=data.get("payment_mode", "cash"),
                 status=False,
                 review_cleanliness=data.get("review_cleanliness", False),
@@ -107,7 +107,7 @@ class Driver(AsyncWebsocketConsumer):
         await self.channel_layer.group_add(self.group_name, self.channel_name)
         await self.accept()
         driver = await models.Driver.objects.aget(id=self.driver_id)
-        self.driver_details = dict(serializers.DriverRegisterSerializer(driver).data)
+        self.driver_details = dict(serializers.DriverSerializer(driver).data)
         self.driver_details["available"] = "1"
         logger.info(f"[DRIVER CONNECTED] ID: {self.driver_id}")
         logger.debug(f"[DRIVER DETAILS] {self.driver_details}")

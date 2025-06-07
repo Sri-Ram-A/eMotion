@@ -6,7 +6,6 @@ import * as types from "@/types"
 import { IDContext } from "@/Context"; 
 
 
-
 export default function Login() {
   const [isLoading, setIsLoading] = useState<Boolean>(false)
   const [formData, setFormData] = useState<types.LoginFormData>({ name: '', email: '', phone_number: '' });

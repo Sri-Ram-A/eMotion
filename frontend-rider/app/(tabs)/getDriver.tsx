@@ -57,7 +57,6 @@ export default function AboutScreen() {
 
     const ws = useRef<WebSocket | null>(null);
     const { id } = useContext(IDContext);
-
     useEffect(() => {
         ws.current = new WebSocket(api.SOCKET + id);
 

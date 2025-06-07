@@ -1,22 +1,4 @@
-Here's an enhanced and **much more detailed** version of your `README.md` with clear sections, code comments, expanded explanations, and usage of the extra technical notes you provided:
-
----
-
 # 🚗 eMotion - Ride Sharing Application
-
-## 📋 Table of Contents
-
-* [Prerequisites](#prerequisites)
-* [Project Structure](#project-structure)
-* [Setup Instructions](#setup-instructions)
-* [Running the Application](#running-the-application)
-* [WebSocket Information](#websocket-information)
-* [API Documentation](#api-documentation)
-* [Troubleshooting](#troubleshooting)
-* [Need Help?](#need-help)
-
----
-
 ## 🛠️ Prerequisites
 
 To run this project, make sure you have the following installed:

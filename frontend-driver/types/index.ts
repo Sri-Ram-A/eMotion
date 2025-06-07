@@ -20,6 +20,9 @@ export interface DriverProfile {
     vehicle_plate?: string;
     vehicle_year?:string;
     rating?: number;
+    total_rides?: number;
+    total_rating?: number;
+    earnings?: number;
   }
   export type RiderData = {
     id: number;

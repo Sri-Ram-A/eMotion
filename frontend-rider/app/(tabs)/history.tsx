@@ -5,26 +5,26 @@ import { IDContext } from "@/Context";
 import * as types from "@/types";
 
 
-const Favourites = () => {
+const history = () => {
   const { id } = useContext(IDContext);
-  const [favourites, setFavourites] = useState<types.FavouriteRide[]>([]);
+  const [history, setHistory] = useState<types.FavouriteRide[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchFavourites = async () => {
+    const fetchHistory = async () => {
       try {
         if (!id) return;
         const data = await handleSubmit(null as unknown as void, 'history/', 'GET', id);
-        setFavourites(data);
+        setHistory(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load favourites");
+        setError(err instanceof Error ? err.message : "Failed to load history");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFavourites();
+    fetchHistory();
   }, [id]);
 
   const renderRide = ({ item }: { item: types.FavouriteRide }) => (
@@ -43,13 +43,13 @@ const Favourites = () => {
 
   if (loading) return <ActivityIndicator size="large" style={styles.loader} />;
   if (error) return <Text style={styles.error}>Error: {error}</Text>;
-  if (favourites.length === 0) return <Text style={styles.noData}>No favourite rides found</Text>;
+  if (history.length === 0) return <Text style={styles.noData}>No history found</Text>;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Your Favourite Rides</Text>
+      <Text style={styles.header}>Your Ride History</Text>
       <FlatList
-        data={favourites}
+        data={history}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderRide}
         contentContainerStyle={styles.listContainer}
@@ -101,4 +101,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Favourites;
+export default history;
