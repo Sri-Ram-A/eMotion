@@ -1,30 +1,30 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, FlatList } from "react-native";
+import { View, Text, ActivityIndicator, FlatList } from "react-native";
 import handleSubmit from "@/services/routes";
 import { IDContext } from "@/Context";
 import * as types from "@/types";
+import styles from "@/styles/historyStyles";
 
-
-const Favourites = () => {
+const History = () => {
   const { id } = useContext(IDContext);
-  const [favourites, setFavourites] = useState<types.FavouriteRide[]>([]);
+  const [history, setHistory] = useState<types.FavouriteRide[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    const fetchFavourites = async () => {
+    const fetchHistory = async () => {
       try {
         if (!id) return;
         const data = await handleSubmit(null as unknown as void, 'history/', 'GET', id);
-        setFavourites(data);
+        setHistory(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load favourites");
+        setError(err instanceof Error ? err.message : "Failed to load ride history");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchFavourites();
+    fetchHistory();
   }, [id]);
 
   const renderRide = ({ item }: { item: types.FavouriteRide }) => (
@@ -43,13 +43,13 @@ const Favourites = () => {
 
   if (loading) return <ActivityIndicator size="large" style={styles.loader} />;
   if (error) return <Text style={styles.error}>Error: {error}</Text>;
-  if (favourites.length === 0) return <Text style={styles.noData}>No favourite rides found</Text>;
+  if (history.length === 0) return <Text style={styles.noData}>No ride history found</Text>;
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Your Favourite Rides</Text>
+      <Text style={styles.header}>Your Ride History</Text>
       <FlatList
-        data={favourites}
+        data={history}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderRide}
         contentContainerStyle={styles.listContainer}
@@ -58,47 +58,4 @@ const Favourites = () => {
   );
 };
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  rideCard: {
-    backgroundColor: '#f3f4f6',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  rideTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  loader: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  error: {
-    color: 'red',
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-  },
-  noData: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-  },
-});
-
-export default Favourites;
+export default History;

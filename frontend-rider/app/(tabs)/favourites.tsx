@@ -62,22 +62,32 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#fff',
+    backgroundColor: '#000', // Dark theme background
   },
   header: {
-    fontSize: 24,
-    fontWeight: 'bold',
+    fontSize: 26,
+    fontFamily: 'Poppins-Bold',
+    color: '#FEE140', // Neon yellow accent
+    textAlign: 'center',
     marginBottom: 20,
   },
   rideCard: {
-    backgroundColor: '#f3f4f6',
+    backgroundColor: '#1a1a1a',
+    borderColor: '#FEE140',
+    borderWidth: 1,
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
+    shadowColor: '#FEE140',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 3.84,
+    elevation: 5,
   },
   rideTitle: {
     fontSize: 18,
-    fontWeight: '600',
+    fontFamily: 'Poppins-SemiBold',
+    color: '#ffffff',
     marginBottom: 4,
   },
   listContainer: {
@@ -93,11 +103,18 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     marginTop: 20,
     fontSize: 16,
+    fontFamily: 'Poppins-Regular',
   },
   noData: {
     textAlign: 'center',
     marginTop: 20,
     fontSize: 16,
+    color: '#aaa',
+    fontFamily: 'Poppins-Regular',
+  },
+  text: {
+    color: '#e0e0e0',
+    fontFamily: 'Poppins-Regular',
   },
 });
 
