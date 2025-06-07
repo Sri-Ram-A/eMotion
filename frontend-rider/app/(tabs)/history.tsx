@@ -1,11 +1,12 @@
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator, FlatList } from "react-native";
+import { View, Text, ActivityIndicator, FlatList } from "react-native";
 import handleSubmit from "@/services/routes";
 import { IDContext } from "@/Context";
 import * as types from "@/types";
+import styles from "@/styles/historyStyles";
 
 
-const history = () => {
+const Favourites = () => {
   const { id } = useContext(IDContext);
   const [history, setHistory] = useState<types.FavouriteRide[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +19,7 @@ const history = () => {
         const data = await handleSubmit(null as unknown as void, 'history/', 'GET', id);
         setHistory(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load history");
+        setError(err instanceof Error ? err.message : "Failed to load favourites");
       } finally {
         setLoading(false);
       }
@@ -43,7 +44,7 @@ const history = () => {
 
   if (loading) return <ActivityIndicator size="large" style={styles.loader} />;
   if (error) return <Text style={styles.error}>Error: {error}</Text>;
-  if (history.length === 0) return <Text style={styles.noData}>No history found</Text>;
+  if (favourites.length === 0) return <Text style={styles.noData}>No favourite rides found</Text>;
 
   return (
     <View style={styles.container}>
@@ -101,4 +102,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default history;
+export default Favourites;

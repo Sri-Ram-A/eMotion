@@ -1,72 +1,125 @@
-import React, { useState, useContext, useEffect } from "react"
-import { Text, TextInput, View, Button, ScrollView, ActivityIndicator, Alert } from "react-native"
-import { router } from 'expo-router';
+import React, { useRef, useEffect, useState, useContext } from 'react';
+import {
+  View,
+  Text,
+  Image,
+  Dimensions,
+  TouchableOpacity,
+  Animated,
+  FlatList,
+} from 'react-native';
+import { Link } from 'expo-router';
+import { IDContext } from '@/Context';
+import * as types from '@/types';
 import handleSubmit from '@/services/routes';
-import * as types from "@/types"
-import { IDContext } from "@/Context"; 
+import styles from '@/styles/indexStyles'; // ✅ Import styles
 
+const { width } = Dimensions.get('window');
 
+const features = [
+  {
+    image: require('../assets/images/driver.jpg'),
+    title: 'Seamless Driver Matchmaking',
+    description: 'Find the best drivers instantly based on your location and preferences.',
+  },
+  {
+    image: require('../assets/images/split.jpg'),
+    title: 'Split Rides Efficiently',
+    description: 'Share your ride and save more, while reducing your carbon footprint.',
+  },
+  {
+    image: require('../assets/images/savetime.jpg'),
+    title: 'Save Time & Avoid Traffic',
+    description: 'Get matched with optimal routes and smart drivers to reduce commute time and bypass traffic congestion effortlessly.',
+  },
+];
 
-export default function Login() {
-  const [isLoading, setIsLoading] = useState<Boolean>(false)
-  const [formData, setFormData] = useState<types.LoginFormData>({ name: '', email: '', phone_number: '' });
-  const { id, setId } = useContext(IDContext); 
-  const onSubmit = async () => {
-    setIsLoading(true);
-    try {
-      const data = await handleSubmit(formData, "login/")
-      console.info(`[LOGIN] Logged In : ${data}`)
-      router.replace("/(tabs)"); // Navigate to the main screen
-    } catch (error) {
-      Alert.alert("Login Failed", "Please check your credentials.");
-    } finally {
-      setIsLoading(false);
-    }
-  };
+export default function Index() {
+  const slideAnim = useRef(new Animated.Value(0)).current;
+  const flatListRef = useRef<FlatList>(null);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
-  const handleChange = (key: keyof typeof formData, value: string) => {
-    setFormData({ ...formData, [key]: value });
-  };
+  const { id } = useContext(IDContext);
+  const [profile, setProfile] = useState<types.RiderProfile | null>(null);
 
-  //If ID exists, redirect to homepage
   useEffect(() => {
-    if (id) {
-      console.log(`[LOGIN] ID Exists : ${id}`)
-      router.replace('/(tabs)');
-    }else{
-      console.log("[LOGIN] Not Found");
-    }
+    Animated.loop(
+      Animated.sequence([
+        Animated.timing(slideAnim, {
+          toValue: -10,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+        Animated.timing(slideAnim, {
+          toValue: 0,
+          duration: 1200,
+          useNativeDriver: true,
+        }),
+      ]),
+    ).start();
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      let nextIndex = (currentIndex + 1) % features.length;
+      setCurrentIndex(nextIndex);
+      flatListRef.current?.scrollToIndex({ index: nextIndex, animated: true });
+    }, 3500);
+    return () => clearInterval(interval);
+  }, [currentIndex]);
+
+  useEffect(() => {
+    const fetchProfile = async () => {
+      if (!id) return;
+      try {
+        const data = await handleSubmit(null as unknown as void, 'profile/', 'GET', id);
+        setProfile(data);
+      } catch (err) {
+        console.error("Failed to fetch profile:", err);
+      }
+    };
+    fetchProfile();
   }, [id]);
 
+  const renderItem = ({ item }: { item: typeof features[0] }) => (
+    <View style={styles.card}>
+      <Image source={item.image} style={styles.image} />
+      <Text style={styles.cardTitle}>{item.title}</Text>
+      <Text style={styles.cardDesc}>{item.description}</Text>
+    </View>
+  );
+
   return (
-    <ScrollView contentContainerStyle={{ padding: 20 }}>
-      <TextInput
-        placeholder="Name"
-        value={formData.name}
-        onChangeText={(text) => handleChange('name', text)}
-      />
-      <TextInput
-        placeholder="Email"
-        keyboardType="email-address"
-        value={formData.email}
-        onChangeText={(text) => handleChange('email', text)}
-      />
-      <TextInput
-        placeholder="Phone Number"
-        keyboardType="phone-pad"
-        maxLength={10}
-        value={formData.phone_number}
-        onChangeText={(text) => handleChange('phone_number', text)}
-      />
-      {isLoading ? (
-        <ActivityIndicator size="small" color="#0000ff" />
-      ) : (
-        <Button title="Login" onPress={onSubmit} />
-      )}
+    <View style={styles.container}>
+      <Animated.Text style={[styles.heading, { transform: [{ translateY: slideAnim }] }]}>
+        {profile?.name ? `Welcome, ${profile.name}! 🚀` : 'Welcome to eMotion 🚀'}
+      </Animated.Text>
 
-      <Text>Not yet Registered ?</Text>
-      <Button title="Click here for registering" onPress={() => router.replace("/register")} />
+      <FlatList
+        ref={flatListRef}
+        data={features}
+        keyExtractor={(item) => item.title}
+        renderItem={renderItem}
+        horizontal
+        pagingEnabled
+        showsHorizontalScrollIndicator={false}
+        style={styles.flatList}
+        contentContainerStyle={{ paddingHorizontal: 10 }}
+      />
 
-    </ScrollView>
-  )
+      <View style={styles.buttonsContainer}>
+        <Link href="./getDriver" asChild>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Normal Ride</Text>
+          </TouchableOpacity>
+        </Link>
+
+        <Link href="./getSplitDriver" asChild>
+          <TouchableOpacity style={styles.button}>
+            <Text style={styles.buttonText}>Split Ride</Text>
+          </TouchableOpacity>
+        </Link>
+      </View>
+    </View>
+  );
 }

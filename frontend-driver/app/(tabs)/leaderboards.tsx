@@ -1,12 +1,15 @@
+// frontend-driver/app/(tabs)/leaderboard.tsx
+
 import React, { useContext, useEffect, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator,FlatList } from "react-native";
+import { View, Text, ActivityIndicator, FlatList } from "react-native";
 import handleSubmit from "@/services/routes";
 import { IDContext } from "@/Context";
 import * as types from "@/types";
+import styles from "../../styles/leaderboardStyles"; // 👈 updated import
 
 const Profile = () => {
-  const { id, setId } = useContext(IDContext);
-  const [drivers,setDrivers] = useState<types.DriverProfile[]>([]);
+  const { id } = useContext(IDContext);
+  const [drivers, setDrivers] = useState<types.DriverProfile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -25,13 +28,14 @@ const Profile = () => {
 
     fetchProfile();
   }, [id]);
+
   const renderDriver = ({ item }: { item: types.DriverProfile }) => (
     <View style={styles.rideCard}>
       <Text style={styles.rideTitle}>Ride #{item.id}</Text>
-      <Text>Name: {item.name}</Text>
-      <Text>Email: {item.email}</Text>
-      <Text>Phone Number: {item.phone_number} km</Text>
-      <Text>Rating❤️: {item.rating} </Text>
+      <Text style={styles.info}>Name: <Text style={styles.value}>{item.name}</Text></Text>
+      <Text style={styles.info}>Email: <Text style={styles.value}>{item.email}</Text></Text>
+      <Text style={styles.info}>Phone Number: <Text style={styles.value}>{item.phone_number} km</Text></Text>
+      <Text style={styles.info}>Rating⭐: <Text style={styles.rating}>{item.rating}</Text></Text>
     </View>
   );
 
@@ -42,7 +46,7 @@ const Profile = () => {
   return (
     <View style={styles.container}>
       <Text style={styles.header}>Leaderboard</Text>
-      <FlatList //HAs inbuilt lazy loading
+      <FlatList
         data={drivers}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderDriver}
@@ -51,48 +55,5 @@ const Profile = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  rideCard: {
-    backgroundColor: '#f3f4f6',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  rideTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  loader: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  error: {
-    color: 'red',
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-  },
-  noData: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-  },
-});
 
 export default Profile;
