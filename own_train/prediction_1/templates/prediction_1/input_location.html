@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Rate Prediction</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: sans-serif;
+            max-width: 800px;
+            margin: auto;
+            padding: 20px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        th, td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        
+        th {
+            background-color: #f2f2f2;
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        #summary {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 20px 0;
+            padding: 10px;
+            background-color: #e8f4fd;
+            border-left: 4px solid #007acc;
+        }
+    </style>
+</head>
+<body>
+    <h2>Rate Prediction</h2>
+
+    <form id="predict-form" method="POST">
+        {% csrf_token %}
+        <label>Pickup Location:</label>
+        <select name="location_id" required>
+            {% for option in pickup_options %}
+                <option value="{{ option.id }}">{{ option.display }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <label>Drop Location (optional):</label>
+        <select name="drop_location_id">
+            <option value="">-- None --</option>
+            {% for option in drop_options %}
+                <option value="{{ option.id }}">{{ option.display }}</option>
+            {% endfor %}
+        </select>
+        <br><br>
+        <button type="submit">Predict</button>
+    </form>
+
+    <br>
+    <div>
+        <canvas id="rateChart"></canvas>
+    </div>
+    
+    <div id="summary"></div>
+    <div id="hourly-table-container"></div>
+
+    <script>
+        const form = document.getElementById('predict-form');
+        const ctx = document.getElementById('rateChart').getContext('2d');
+        const summary = document.getElementById('summary');
+        const hourlyTableContainer = document.getElementById('hourly-table-container');
+        let chart;
+
+        form.onsubmit = async function(e) {
+            e.preventDefault();
+            const formData = new FormData(form);
+
+            try {
+                const response = await fetch("{% url 'fetch_prediction_data' %}", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+
+                if (data.error) {
+                    summary.innerText = data.error;
+                    hourlyTableContainer.innerHTML = '';
+                    if (chart) chart.destroy();
+                    return;
+                }
+
+                // Destroy existing chart
+                if (chart) chart.destroy();
+
+                // Create new chart
+                chart = new Chart(ctx, {
+                    type: 'line',
+                    data: {
+                        labels: data.x,
+                        datasets: [{
+                            label: 'Predicted Rate (₹)',
+                            data: data.y,
+                            borderColor: 'blue',
+                            backgroundColor: 'lightblue',
+                            tension: 0.3,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        scales: {
+                            x: {
+                                title: {
+                                    display: true,
+                                    text: 'Time (Hours)'
+                                }
+                            },
+                            y: {
+                                title: {
+                                    display: true,
+                                    text: 'Rate (₹)'
+                                }
+                            }
+                        }
+                    }
+                });
+
+                // Handle different chart types and display appropriate information
+                if (data.chart_type === 'min') {
+                    // Drop location selected - show minimum time and price
+                    summary.innerHTML = `Best time to go is at <strong>${data.min_time}</strong>, price <strong>₹${data.min_price.toFixed(2)}</strong>.`;
+                    hourlyTableContainer.innerHTML = ''; // No table for specific drop location
+                } else {
+                    // No drop location selected - show max earning and hourly table
+                    summary.innerHTML = `Max you can earn is <strong>₹${data.max_earning.toFixed(2)}</strong> by dropping at <strong>${data.best_drop}</strong> at hour <strong>${data.best_hour}</strong>`;
+                    
+                    // Display hourly table only when no drop location is selected
+                    if (data.hourly_table && data.hourly_table.length > 0) {
+                        hourlyTableContainer.innerHTML = generateHourlyTable(data.hourly_table);
+                    } else {
+                        hourlyTableContainer.innerHTML = '';
+                    }
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                summary.innerText = 'An error occurred while fetching predictions.';
+                hourlyTableContainer.innerHTML = '';
+                if (chart) chart.destroy();
+            }
+        }
+
+        function generateHourlyTable(hourlyData) {
+            let table = `
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Hour</th>
+                            <th>Max Money (₹)</th>
+                            <th>Drop Locations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+            
+            for (const row of hourlyData) {
+                table += `
+                    <tr>
+                        <td>${row.hour}</td>
+                        <td>₹${row.max_money.toFixed(2)}</td>
+                        <td>${row.drop_locations.join(', ')}</td>
+                    </tr>
+                `;
+            }
+            
+            table += `
+                    </tbody>
+                </table>
+            `;
+            return table;
+        }
+    </script>
+</body>
+</html>
