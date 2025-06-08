@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 17,
-    color: '#ccff33',
+    color: "white",
     fontWeight: '500',
     textAlign: 'right',
     flex: 1,
@@ -117,7 +117,7 @@ const styles = StyleSheet.create({
   },
   highlightValue: {
     fontSize: 18,
-    color: '#00ff00',
+    color: "white",
     fontWeight: '700',
     fontFamily: 'Arial',
   },
@@ -158,7 +158,7 @@ const styles = StyleSheet.create({
   },
   rejectButton: {
     flex: 1,
-    backgroundColor: '#222200',
+    backgroundColor: "red",
     paddingVertical: 18,
     borderRadius: 14,
     alignItems: 'center',

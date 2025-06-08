@@ -1,12 +1,21 @@
-//Use if you havent tunneled/hosted your backend
-// import { Platform } from 'react-native';
-// const HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
-// export const BASE_API_URL = `http://${HOST}:8000/api/driver/`;
-// export const SOCKET = `ws://${HOST}:8000/ws/driver/`;
+import { Platform } from 'react-native';
 
-//Use this if you have tunneled or hosted backend
-// https://cub-true-shiner.ngrok-free.app/driver
-// wss://cub-true-shiner.ngrok-free.app/ws/driver #this wss link you cannot put in browser..only postman
-const HOST = "cub-true-shiner.ngrok-free.app"
-export const BASE_API_URL = `https://${HOST}/api/driver/`;
-export const SOCKET = `wss://${HOST}/ws/driver/`;
+const useTunnel = false; // ✅ Set to `true` if using ngrok or hosted backend
+
+let HOST: string;
+let BASE_API_URL: string;
+let SOCKET: string;
+
+if (useTunnel) {
+  // ✅ Hosted/Tunneled Configuration
+  HOST = "cub-true-shiner.ngrok-free.app";
+  BASE_API_URL = `https://${HOST}/api/driver/`;
+  SOCKET = `wss://${HOST}/ws/driver/`;
+} else {
+  // ✅ Local Development Configuration
+  HOST = Platform.OS === 'android' ? '10.0.2.2' : 'localhost';
+  BASE_API_URL = `http://${HOST}:8000/api/driver/`;
+  SOCKET = `ws://${HOST}:8000/ws/driver/`;
+}
+
+export { BASE_API_URL, SOCKET };

@@ -20,9 +20,9 @@ export interface DriverProfile {
     vehicle_plate?: string;
     vehicle_year?:string;
     rating?: number;
-    total_rides?: number;
-    total_rating?: number;
-    earnings?: number;
+     total_rides?: number;     
+      total_rating?: number;     
+      earnings?: number;         
   }
   export type RiderData = {
     id: number;
@@ -41,17 +41,5 @@ export interface DriverProfile {
     price:number;
     estimated_duration:number,
     distance:number
-  };
-  export type HourlyTableEntry = {
-    drop_locations: string[];
-    hour: number;
-    max_money: number;
-  };
-  
-  export type PredictionData = {
-    best_drop: string;
-    best_hour: number;
-    chart_type: string;
-    hourly_table: HourlyTableEntry[];
   };
   
