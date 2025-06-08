@@ -17,7 +17,7 @@ urlpatterns = [
     path('driver/profile/<int:pk>/', views.DriverProfile.as_view(), name='driver_profile'),
     path('driver/history/<int:pk>/', views.DriverHistory.as_view(), name='driver_history'),
     path('driver/leaderboards/', views.Leaderboards.as_view(), name='driver_leaderboards'),
-    path('driver/demand/', views.Demand.as_view(), name='driver_demand'),
+    path('driver/demand/<str:source>', views.Demand.as_view(), name='driver_demand'),
 ]
 
  

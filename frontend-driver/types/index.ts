@@ -42,4 +42,16 @@ export interface DriverProfile {
     estimated_duration:number,
     distance:number
   };
+  export type HourlyTableEntry = {
+    drop_locations: string[];
+    hour: number;
+    max_money: number;
+  };
+  
+  export type PredictionData = {
+    best_drop: string;
+    best_hour: number;
+    chart_type: string;
+    hourly_table: HourlyTableEntry[];
+  };
   

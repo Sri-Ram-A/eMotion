@@ -7,7 +7,7 @@ type RouteConfig = {
   'profile/': void;
   'history/': void;
   'leaderboards/': void;
-  'demand/': void;
+  [key: `demand/${string}`]: void; // Allow dynamic keys
   '': void;
 }
 

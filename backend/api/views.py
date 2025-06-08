@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from rest_framework import generics
 from . import serializers
 from . import models
-
+from .predictor.post_processor import fetch_prediction_data
 class ListUsers(APIView):
     def get(self, request, format=None):
         welcome={"Welcome":"To my api framework"}
@@ -92,4 +92,6 @@ class Leaderboards(APIView):
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class Demand(APIView):
-    pass
+    def get(self, request, source):
+        data=fetch_prediction_data(source)
+        return Response(data,status=status.HTTP_200_OK)

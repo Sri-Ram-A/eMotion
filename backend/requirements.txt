@@ -7,3 +7,7 @@ colorama
 djangorestframework-simplejwt
 django-cors-headers
 loguru
+scikit-learn==1.5.2 #very important version number
+joblib
+pandas
+xgboost
