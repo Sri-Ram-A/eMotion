@@ -44,7 +44,7 @@ const Favourites = () => {
 
   if (loading) return <ActivityIndicator size="large" style={styles.loader} />;
   if (error) return <Text style={styles.error}>Error: {error}</Text>;
-  if (favourites.length === 0) return <Text style={styles.noData}>No favourite rides found</Text>;
+  if (history.length === 0) return <Text style={styles.noData}>No favourite rides found</Text>;
 
   return (
     <View style={styles.container}>
@@ -58,48 +58,5 @@ const Favourites = () => {
     </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: '#fff',
-  },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
-  },
-  rideCard: {
-    backgroundColor: '#f3f4f6',
-    padding: 16,
-    borderRadius: 12,
-    marginBottom: 12,
-  },
-  rideTitle: {
-    fontSize: 18,
-    fontWeight: '600',
-    marginBottom: 4,
-  },
-  listContainer: {
-    paddingBottom: 20,
-  },
-  loader: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  error: {
-    color: 'red',
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-  },
-  noData: {
-    textAlign: 'center',
-    marginTop: 20,
-    fontSize: 16,
-  },
-});
 
 export default Favourites;
