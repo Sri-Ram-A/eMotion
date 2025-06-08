@@ -12,15 +12,19 @@ export interface LoginFormData {
     phone_number: string;
 }
 export interface DriverProfile {
-    id: number;
-    name: string;
-    email: string;
-    phone_number?: string;
-    driving_license?: string;
-    vehicle_plate?: string;
-    vehicle_year?:string;
-    rating?: number;
-  }
+  id: number;
+  name: string;
+  email: string;
+  phone_number?: string;
+  driving_license?: string;
+  vehicle_plate?: string;
+  vehicle_year?: string;
+  rating?: number;
+  total_rides?: number;      
+  total_rating?: number;    
+  earnings?: number;         
+}
+
   export type RiderData = {
     id: number;
     name: string;
