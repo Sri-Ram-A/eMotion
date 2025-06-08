@@ -15,7 +15,6 @@ export default function AboutScreen() {
     ws.current.onopen = () => {
       console.log("WebSocket connected");
     };
-
     ws.current.onmessage = (e) => {
       console.log("Received:", e.data);
 
@@ -39,9 +38,9 @@ export default function AboutScreen() {
     };
     ws.current.onclose = () => {
       console.log("WebSocket closed");
-    };
-  };
-
+    }; 
+  }; 
+ 
   useEffect(() => {
     connectWebSocket();
     return () => {
@@ -177,4 +176,3 @@ export default function AboutScreen() {
     </ScrollView>
   );
 }
-

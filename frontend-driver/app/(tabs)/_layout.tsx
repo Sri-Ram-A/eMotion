@@ -8,9 +8,19 @@ export default function TabLayout() {
             screenOptions={{
                 tabBarActiveTintColor: '#1e3a8a', // Tailwind blue-800
                 tabBarInactiveTintColor: '#6b7280', // Tailwind gray-500
-                headerStyle: { backgroundColor: '#ffffff' },
-                headerTitleStyle: { color: '#1e3a8a', fontWeight: 'bold' },
-                headerTintColor: '#1e3a8a',
+
+                // 🔧 Updated top header bar to dark grey/black
+                headerStyle: {
+                    backgroundColor: '#1f2937', // Tailwind gray-800
+                },
+                headerTitleStyle: {
+                    color: 'yellow', // Tailwind yellow-400
+                    fontWeight: 'bold',
+                    textAlign:'center'
+                },
+                headerTintColor: '#facc15', // Icons and back arrow in yellow
+
+                // ✅ Keep tab bar white
                 tabBarStyle: {
                     backgroundColor: '#ffffff',
                     borderTopColor: '#e5e7eb', // Tailwind gray-200

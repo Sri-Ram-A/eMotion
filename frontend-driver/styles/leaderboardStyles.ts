@@ -1,5 +1,3 @@
-// frontend-driver/styles/leaderboardStyles.ts
-
 import { StyleSheet } from "react-native";
 
 const styles = StyleSheet.create({
@@ -27,7 +25,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 5,
     borderLeftWidth: 5,
-    borderLeftColor: "#28B463", // green
+    borderLeftColor: "#28B463",
   },
   rideTitle: {
     fontSize: 20,
