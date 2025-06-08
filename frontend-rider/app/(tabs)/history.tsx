@@ -5,7 +5,6 @@ import { IDContext } from "@/Context";
 import * as types from "@/types";
 import styles from "@/styles/historyStyles";
 
-
 const Favourites = () => {
   const { id } = useContext(IDContext);
   const [history, setHistory] = useState<types.FavouriteRide[]>([]);
