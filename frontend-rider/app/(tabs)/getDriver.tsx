@@ -56,11 +56,11 @@ export default function GetDriver() {
   const [priceDetails, setPriceDetails] = useState<types.RiderData | string>('');
   const [showRatingModal, setShowRatingModal] = useState(false);
 
-  const ws = useRef<WebSocket | null>(null);
-  const { id } = useContext(IDContext);
+    const ws = useRef<WebSocket | null>(null);
+    const { id } = useContext(IDContext);
 
-  useEffect(() => {
-    ws.current = new WebSocket(api.SOCKET + id);
+    useEffect(() => {
+        ws.current = new WebSocket(api.SOCKET + id);
 
     ws.current.onopen = () => {
       console.log('WebSocket connected');

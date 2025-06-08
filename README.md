@@ -1,7 +1,3 @@
-Here's an enhanced and **much more detailed** version of your `README.md` with clear sections, code comments, expanded explanations, and usage of the extra technical notes you provided:
-
----
-
 # 🚗 eMotion - Ride Sharing Application
 ## 🛠️ Prerequisites
 

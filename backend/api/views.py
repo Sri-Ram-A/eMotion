@@ -15,7 +15,7 @@ class ListUsers(APIView):
     
 class RiderRegister(APIView):
     def post(self, request):
-        serializer = serializers.RiderRegisterSerializer(data=request.data)
+        serializer = serializers.RiderSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -23,7 +23,7 @@ class RiderRegister(APIView):
 
 class RiderLogin(APIView):
     def post(self,request):
-        serializer=serializers.RiderLoginSerializer(data=request.data)
+        serializer=serializers.RiderSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data,status=status.HTTP_200_OK)
@@ -33,13 +33,13 @@ class RiderLogin(APIView):
 class RiderProfile(APIView):
     def get(self, request, pk):
         rider = get_object_or_404(models.Rider, pk=pk)
-        serializer = serializers.RiderProfileSerializer(rider)
+        serializer = serializers.RiderSerializer(rider)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class RiderHistory(APIView):
     def get(self,request,pk):
         rider_rides = models.RideDetails.objects.filter(rider=pk)
-        serializer=serializers.RiderHistorySerializer(rider_rides,many=True)
+        serializer=serializers.RideDetailsSerializer(rider_rides,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class Favourites(APIView):
@@ -51,13 +51,13 @@ class Favourites(APIView):
             if ride.driver not in seen_drivers:
                 seen_drivers.add(ride.driver)
                 unique_rides.append(ride)
-        serializer = serializers.RiderFavouriteSerializer(unique_rides, many=True)
+        serializer = serializers.RideDetailsSerializer(unique_rides, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class DriverRegister(APIView):
     def post(self, request):
         print(request)
-        serializer = serializers.DriverRegisterSerializer(data=request.data)
+        serializer = serializers.DriverSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
@@ -65,10 +65,9 @@ class DriverRegister(APIView):
     
 class DriverLogin(APIView):
     def post(self,request):
-        serializer=serializers.DriverLoginSerializer(data=request.data)
+        serializer=serializers.DriverSerializer(data=request.data)
         if serializer.is_valid():
             serializer.save()
-            
             return Response(serializer.data,status=status.HTTP_200_OK)
         else:
             return Response(serializer.errors,status=status.HTTP_401_UNAUTHORIZED)
@@ -76,19 +75,20 @@ class DriverLogin(APIView):
 class DriverProfile(APIView):
     def get(self, request, pk):
         rider = get_object_or_404(models.Driver, pk=pk)
-        serializer = serializers.DriverProfileSerializer(rider)
+        serializer = serializers.DriverSerializer(rider)
+        
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class DriverHistory(APIView):
     def get(self,request,pk):
         rider_rides = models.RideDetails.objects.filter(driver=pk)
-        serializer=serializers.DriverHistorySerializer(rider_rides,many=True)
+        serializer=serializers.RideDetailsSerializer(rider_rides,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
 class Leaderboards(APIView):
     def get(self,request):
         drivers=models.Driver.objects.all()
-        serializer=serializers.DriverProfileSerializer(drivers,many=True)
+        serializer=serializers.DriverSerializer(drivers,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
     
 class Demand(APIView):

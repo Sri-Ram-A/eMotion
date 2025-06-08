@@ -5,7 +5,7 @@ import { IDContext } from "@/Context";
 import * as types from "@/types";
 import styles from "@/styles/historyStyles";
 
-const History = () => {
+const Favourites = () => {
   const { id } = useContext(IDContext);
   const [history, setHistory] = useState<types.FavouriteRide[]>([]);
   const [loading, setLoading] = useState(true);
@@ -18,7 +18,7 @@ const History = () => {
         const data = await handleSubmit(null as unknown as void, 'history/', 'GET', id);
         setHistory(data);
       } catch (err) {
-        setError(err instanceof Error ? err.message : "Failed to load ride history");
+        setError(err instanceof Error ? err.message : "Failed to load favourites");
       } finally {
         setLoading(false);
       }
@@ -43,7 +43,7 @@ const History = () => {
 
   if (loading) return <ActivityIndicator size="large" style={styles.loader} />;
   if (error) return <Text style={styles.error}>Error: {error}</Text>;
-  if (history.length === 0) return <Text style={styles.noData}>No ride history found</Text>;
+  if (history.length === 0) return <Text style={styles.noData}>No favourite rides found</Text>;
 
   return (
     <View style={styles.container}>
@@ -58,4 +58,4 @@ const History = () => {
   );
 };
 
-export default History;
+export default Favourites;
