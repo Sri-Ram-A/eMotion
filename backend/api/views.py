@@ -4,10 +4,10 @@ from rest_framework.response import Response
 # from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework import status
 from django.shortcuts import get_object_or_404
-from rest_framework import generics
 from . import serializers
 from . import models
 from .predictor.post_processor import fetch_prediction_data
+from .leaders import get_rankings
 class ListUsers(APIView):
     def get(self, request, format=None):
         welcome={"Welcome":"To my api framework"}
@@ -85,11 +85,15 @@ class DriverHistory(APIView):
         serializer=serializers.RideDetailsSerializer(rider_rides,many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+
 class Leaderboards(APIView):
-    def get(self,request):
-        drivers=models.Driver.objects.all()
-        serializer=serializers.DriverSerializer(drivers,many=True)
-        return Response(serializer.data, status=status.HTTP_200_OK)
+    def get(self, request):
+        drivers = models.Driver.objects.all()
+        drivers_data = serializers.DriverSerializer(drivers, many=True).data
+        if not drivers_data:
+            return Response([], status=status.HTTP_200_OK)
+        ranked_drivers=get_rankings(drivers_data)
+        return Response(ranked_drivers, status=status.HTTP_200_OK)
     
 class Demand(APIView):
     def get(self, request, source):

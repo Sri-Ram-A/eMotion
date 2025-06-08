@@ -1,4 +1,4 @@
-[
+const data = [
     'MG Road', 'Brigade Road', 'Commercial Street', 'Shivajinagar', 'Cubbon Park',
     'Vidhana Soudha', 'Chickpet', 'Balepet', 'Cottonpet', 'Sultanpet', 'Avenue Road', 'KR Market',
     'Gandhi Nagar', 'Chamrajpet', 'Nagarathpet', 'Akkipet', 'Mamulpet', 'Dharmaraya Swamy Temple',
@@ -38,3 +38,4 @@
     'Hesaraghatta', 'Peenya Industrial Area', 'Rajajinagar Industrial Suburb',
     'Yeshwanthpur Industrial Suburb','Whitefield EPIP', 'Export Promotion Industrial Park','Aerospace Park'
 ]
+export default data

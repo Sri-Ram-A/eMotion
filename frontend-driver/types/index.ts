@@ -41,21 +41,21 @@ export interface DriverProfile {
     price:number;
     estimated_duration:number,
     distance:number
-<<<<<<< HEAD
+    arrive_at?:string
   };
   export type HourlyTableEntry = {
-    drop_locations: string[];
-    hour: number;
-    max_money: number;
-  };
+    drop_locations: string[]
+    hour: number
+    max_money: number
+  }
   
   export type PredictionData = {
-    best_drop: string;
-    best_hour: number;
-    chart_type: string;
-    hourly_table: HourlyTableEntry[];
-  };
+    x?: number[]
+    y?: number[]
+    max_earning?: number
+    best_drop: string
+    best_hour: number
+    chart_type: string
+    hourly_table: HourlyTableEntry[]
+  }
   
-=======
-  };
->>>>>>> 77904b7b670f6dbb80727df2ad00d583d198d858

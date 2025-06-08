@@ -112,6 +112,11 @@ export default function AboutScreen() {
                       <Text style={styles.label}>📏 Distance</Text>
                       <Text style={styles.highlightValue}>{riderMessage.distance}</Text>
                     </View>
+                    {(riderMessage.arrive_at) &&
+                    (<View style={styles.priceDistanceItem}>
+                      <Text style={styles.label}>📏 Arrive AT</Text>
+                      <Text style={styles.highlightValue}>{riderMessage.arrive_at}</Text>
+                    </View>)}
                     <View style={styles.priceDistanceItem}>
                       <Text style={styles.label}>💰 Price</Text>
                       <Text style={styles.priceValue}>{riderMessage.price}</Text>

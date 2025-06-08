@@ -1,0 +1,182 @@
+{
+    "x": [
+        0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23
+    ],
+    "y": [
+        141.66847725273163,138.53913713475575,138.9959693191337,139.98615924091615,140.23387362178684,139.91300232505552,139.8474945830787,140.72508878547774,140.17522698741894,141.35651179710806,144.75893175254996,146.81842848856832,147.17577574437865,146.79312028562268,153.53735288107268,150.724091009163,154.7371148469737,150.05886352569757,150.4917624948589,150.35387268693398,150.44344448282206,149.96567992935186,140.38744402663022,142.270241255568
+    ],
+    "max_earning": 154.7371148469737,
+    "best_drop": "Jaraganahalli",
+    "best_hour": 16,
+    "chart_type": "max",
+    "hourly_table": [
+        {
+            "hour": 0,
+            "max_money": 141.66847725273163,
+            "drop_locations": [
+                "Jaraganahalli"
+            ]
+        },
+        {
+            "hour": 1,
+            "max_money": 106.33045062746608,
+            "drop_locations": [
+                "Bommasandra"
+            ]
+        },
+        {
+            "hour": 2,
+            "max_money": 103.68552964038807,
+            "drop_locations": [
+                "Tindlu"
+            ]
+        },
+        {
+            "hour": 3,
+            "max_money": 103.71842601492285,
+            "drop_locations": [
+                "Koramangala"
+            ]
+        },
+        {
+            "hour": 4,
+            "max_money": 98.86201743218685,
+            "drop_locations": [
+                "Kaggalipura"
+            ]
+        },
+        {
+            "hour": 5,
+            "max_money": 77.63826145853412,
+            "drop_locations": [
+                "SJR Watermark"
+            ]
+        },
+        {
+            "hour": 6,
+            "max_money": 76.17581614893237,
+            "drop_locations": [
+                "Nagawara"
+            ]
+        },
+        {
+            "hour": 7,
+            "max_money": 74.15364653254939,
+            "drop_locations": [
+                "Avenue Road"
+            ]
+        },
+        {
+            "hour": 8,
+            "max_money": 70.91870940119205,
+            "drop_locations": [
+                "Padmanabha Nagar"
+            ]
+        },
+        {
+            "hour": 9,
+            "max_money": 69.31531781604657,
+            "drop_locations": [
+                "Rajajinagar Industrial Suburb"
+            ]
+        },
+        {
+            "hour": 10,
+            "max_money": 67.91964040281673,
+            "drop_locations": [
+                "Kadubeesanahalli"
+            ]
+        },
+        {
+            "hour": 11,
+            "max_money": 67.94793632980858,
+            "drop_locations": [
+                "Loc 65.93478260869566"
+            ]
+        },
+        {
+            "hour": 12,
+            "max_money": 66.78767396868382,
+            "drop_locations": [
+                "JP Nagar 6th Phase"
+            ]
+        },
+        {
+            "hour": 13,
+            "max_money": 66.64813357551124,
+            "drop_locations": [
+                "Rajagopal Nagar"
+            ]
+        },
+        {
+            "hour": 14,
+            "max_money": 66.56687854490171,
+            "drop_locations": [
+                "Wipro Gate"
+            ]
+        },
+        {
+            "hour": 15,
+            "max_money": 69.04800985490013,
+            "drop_locations": [
+                "Shanthinagar"
+            ]
+        },
+        {
+            "hour": 16,
+            "max_money": 69.80678472414814,
+            "drop_locations": [
+                "Hesaraghatta"
+            ]
+        },
+        {
+            "hour": 17,
+            "max_money": 69.46180681095761,
+            "drop_locations": [
+                "Chord Road"
+            ]
+        },
+        {
+            "hour": 18,
+            "max_money": 69.12070359227707,
+            "drop_locations": [
+                "Cantonment"
+            ]
+        },
+        {
+            "hour": 19,
+            "max_money": 68.51333073968563,
+            "drop_locations": [
+                "Shivaji Nagar"
+            ]
+        },
+        {
+            "hour": 20,
+            "max_money": 67.44254620531218,
+            "drop_locations": [
+                "Old Airport Road"
+            ]
+        },
+        {
+            "hour": 21,
+            "max_money": 64.9507608208339,
+            "drop_locations": [
+                "New Tippa Sandra"
+            ]
+        },
+        {
+            "hour": 22,
+            "max_money": 64.78828228853332,
+            "drop_locations": [
+                "Begur"
+            ]
+        },
+        {
+            "hour": 23,
+            "max_money": 64.51424544873818,
+            "drop_locations": [
+                "International Airport Road"
+            ]
+        }
+    ]
+}

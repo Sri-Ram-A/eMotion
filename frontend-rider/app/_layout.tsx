@@ -6,6 +6,7 @@ import { ActivityIndicator, View } from 'react-native';
 
 export default function RootLayout() {
   // Ensure the Poppins font is loaded
+  //frontend-rider\app\assets\fonts\Poppins-Bold.ttf
   const [fontsLoaded] = useFonts({
     'Poppins-Bold': require('@/assets/fonts/Poppins-Bold.ttf'),
     'Poppins-Regular': require('@/assets/fonts/Poppins-Regular.ttf'),
@@ -33,6 +34,7 @@ export default function RootLayout() {
           headerTintColor: '#FEE140', // For back button
           contentStyle: { backgroundColor: '#000' }, // screen background
         }}
+        initialRouteName="index" // Add this line to set the initial route
       >
         <Stack.Screen
           name="register"

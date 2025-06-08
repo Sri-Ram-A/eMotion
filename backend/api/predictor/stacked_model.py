@@ -1,25 +1,30 @@
+import os
 import pickle
 import joblib
-import os
 import numpy as np
 import pandas as pd
+import warnings
+warnings.simplefilter(action='ignore') #I was getting xgboost future update..so
 class RatePrediction:
     def __init__(self):
         self.model = None
         self.data = None
         self.pickup_l = None
         self._processed_data = {}
+
     def load_model_and_data(self):
-        base = os.getcwd()
-        with open(os.path.join(base,'pickle_models','Stacked_model_fast.pkl'),'rb') as f:
+        # Use the path relative to this script (post_processor.py)
+        base_dir = os.path.dirname(__file__)  # This gets path to predictor/
+        pickle_dir = os.path.join(base_dir, 'pickle_models')
+        with open(os.path.join(pickle_dir, 'Stacked_model_fast.pkl'), 'rb') as f:
             self.model = joblib.load(f)
-        with open(os.path.join(base,'pickle_models','input_data.pkl'),'rb') as f:
+        with open(os.path.join(pickle_dir, 'input_data.pkl'), 'rb') as f:
             self.data = pickle.load(f)
-        with open(os.path.join(base,'pickle_models','pickup_l1.pkl'),'rb') as f:
+        with open(os.path.join(pickle_dir, 'pickup_l1.pkl'), 'rb') as f:
             self.pickup_l = pickle.load(f)
-        with open(os.path.join(base,'pickle_models','drop_loc.pkl'),'rb') as f:
+        with open(os.path.join(pickle_dir, 'drop_loc.pkl'), 'rb') as f:
             self.drop_l = pickle.load(f)
-            
+
     def predict_driver(self, hooked_up_loc):
         if self.model is None:
             print("your fucking model is not loaded")

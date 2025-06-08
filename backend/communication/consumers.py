@@ -2,6 +2,7 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from api import models, serializers
 from loguru import logger
 import json
+from datetime import datetime
 from . import helper
 #connect with postamn using this url man
 #ws://localhost:8000/ws/rider/<put some primary key>
@@ -29,13 +30,19 @@ class Rider(AsyncWebsocketConsumer):
     async def receive(self, text_data):
         data = json.loads(text_data)
         if data.get("price"):
-            source_location_data=helper.get_address_details(data.get("source")) #gives address,latitude.longtude
-            destination_location_data=helper.get_address_details(data.get("destination")) 
-            data["source_latitude"],data["source_longitude"],data["source_details"]=source_location_data.get("latitude"),source_location_data.get("longitude"),source_location_data.get("details")
-            data["destination_latitude"],data["destination_longitude"],data["destination_details"]=destination_location_data.get("latitude"),destination_location_data.get("longitude"),destination_location_data.get("details")
-            self.estimated_duration=helper.get_duration()
-            self.distance=helper.get_distance((data["source_latitude"],data["source_longitude"]),(data["destination_latitude"],data["destination_longitude"]))
-            self.price=helper.get_price()
+            current_time = datetime.now()
+            # Format the time as a string in "09:30" format
+            start_time = current_time.strftime("%H:%M")
+            # Rider sends request
+            info1,details1=helper.get_coordinates(data.get("source"))
+            info2,details2=helper.get_coordinates(data.get("destination"))
+            
+            ride_data = helper.calculate_trip_details(details1,details2,info1,info2,start_time) 
+            data["source_latitude"],data["source_longitude"],data["source_details"]=ride_data.get("source_latitude"),ride_data.get("source_longitude"),ride_data.get("source_details")
+            data["destination_latitude"],data["destination_longitude"],data["destination_details"]=ride_data.get("destination_latitude"),ride_data.get("destination_longitude"),ride_data.get("destination_details")
+            self.estimated_duration=ride_data["estimated_duration"]
+            self.distance=ride_data["distance"]
+            self.price=ride_data["price"]
             data["price"]=self.price
             data["estimated_duration"]=self.estimated_duration
             data["distance"]=self.distance
@@ -67,14 +74,19 @@ class Rider(AsyncWebsocketConsumer):
                 favourite=data.get("favourite",0)
             )
         else:
+            current_time = datetime.now()
+            # Format the time as a string in "09:30" format
+            start_time = current_time.strftime("%H:%M")
             # Rider sends request
-            source_location_data=helper.get_address_details(data.get("source")) #gives address,latitude.longtude
-            destination_location_data=helper.get_address_details(data.get("destination")) 
-            data["source_latitude"],data["source_longitude"],data["source_details"]=source_location_data.get("latitude"),source_location_data.get("longitude"),source_location_data.get("details")
-            data["destination_latitude"],data["destination_longitude"],data["destination_details"]=destination_location_data.get("latitude"),destination_location_data.get("longitude"),destination_location_data.get("details")
-            self.estimated_duration=helper.get_duration()
-            self.distance=helper.get_distance((data["source_latitude"],data["source_longitude"]),(data["destination_latitude"],data["destination_longitude"]))
-            self.price=helper.get_price()
+            info1,details1=helper.get_coordinates(data.get("source"))
+            info2,details2=helper.get_coordinates(data.get("destination"))
+            
+            ride_data = helper.calculate_trip_details(details1,details2,info1,info2,start_time) 
+            data["source_latitude"],data["source_longitude"],data["source_details"]=ride_data.get("source_latitude"),ride_data.get("source_longitude"),ride_data.get("source_details")
+            data["destination_latitude"],data["destination_longitude"],data["destination_details"]=ride_data.get("destination_latitude"),ride_data.get("destination_longitude"),ride_data.get("destination_details")
+            self.estimated_duration=ride_data["estimated_duration"]
+            self.distance=ride_data["distance"]
+            self.price=ride_data["price"]
             data["price"]=self.price
             data["estimated_duration"]=self.estimated_duration
             data["distance"]=self.distance

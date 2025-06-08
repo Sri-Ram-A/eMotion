@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 import { router } from 'expo-router';
 import * as SecureStore from 'expo-secure-store';
-import { LinearGradient } from 'react-native-linear-gradient'; //I Added this import
 import handleSubmit from '@/services/routes';
 import * as types from '@/types';
 import { IDContext } from '@/Context';

@@ -18,17 +18,17 @@ const { width } = Dimensions.get('window');
 
 const features = [
   {
-    image: require('../assets/images/driver.jpg'),
+    image: require('@/assets/images/driver.jpg'),
     title: 'Seamless Driver Matchmaking',
     description: 'Find the best drivers instantly based on your location and preferences.',
   },
   {
-    image: require('../assets/images/split.jpg'),
+    image: require('@/assets/images/split.jpg'),
     title: 'Split Rides Efficiently',
     description: 'Share your ride and save more, while reducing your carbon footprint.',
   },
   {
-    image: require('../assets/images/security.jpg'),
+    image: require('@/assets/images/security.jpg'),
     title: 'Save Time & Avoid Traffic',
     description: 'Get matched with optimal routes and smart drivers to reduce commute time and bypass traffic congestion effortlessly.',
   },
