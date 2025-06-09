@@ -1,6 +1,6 @@
 import { Platform } from 'react-native';
 
-const useTunnel = false; // ✅ Set to `true` if using ngrok or hosted backend
+const useTunnel = true; // ✅ Set to `true` if using ngrok or hosted backend
 
 let HOST: string;
 let BASE_API_URL: string;

@@ -5,20 +5,40 @@ from datetime import datetime, timedelta
 import requests
 import math
 # PMM TomTom API Key
-API_KEY = "MexiPby9cseRStOBWLta27NtzUcGwwFV"
+# API_KEY = "MexiPby9cseRStOBWLta27NtzUcGwwFV"
 
-def get_coordinates(location):
-    """
-    Takes an address string and returns a dictionary with address, latitude, and longitude.
-    Returns None if the location cannot be found.
-    """
-    geolocator = Nominatim(user_agent="geoapi")
-    location_data = geolocator.geocode(location)
-    if location_data:
-        return (float(location_data.latitude), float(location_data.longitude)), location_data.address
-    else:
-        print(f"Could not find coordinates for '{location}'.")
-        return (None, None), None
+API_KEY="KkA825q2KDuYOmsyo78q3EFpg8ZIi2gN"
+
+
+# def get_coordinates(location):
+#     """
+#     Takes an address string and returns a dictionary with address, latitude, and longitude.
+#     Returns None if the location cannot be found.
+#     """
+#     geolocator = Nominatim(user_agent="geoapi")
+#     location_data = geolocator.geocode(location)
+#     if location_data:
+#         return (float(location_data.latitude), float(location_data.longitude)), location_data.address
+#     else:
+#         print(f"Could not find coordinates for '{location}'.")
+#         return (None, None), None
+def get_coordinates(address):
+    base_url = "https://api.opencagedata.com/geocode/v1/json"
+    params = {
+        "q": address,
+        "key": "aedbf6e3ec284f75a00c1adaf622b1cf",
+        "limit": 1
+    }
+    
+    response = requests.get(base_url, params=params)
+    
+    if response.status_code == 200:
+        data = response.json()
+        if data["results"]:
+            location = data["results"][0]["geometry"]
+            return location["lat"], location["lng"]
+    
+    return None
 
 
 def get_route(source, destination):
@@ -92,7 +112,8 @@ def calculate_fare_and_time(route_points, distance_km, start_time_str):
 
     # Sample every N points to reduce API calls (max 10 samples)
     # I sampled with rate of 10 .. You can change
-    sample_rate = max(1, len(route_points) // 10)
+    sample_rate = max(1, len(route_points) // 100)
+    print("Sample rate:",sample_rate)
 
     # Calculate travel time by segments between sampled points
     for i in range(0, len(route_points) - 1, sample_rate):
@@ -227,6 +248,7 @@ def calculate_trip_details(details1,details2,info1: tuple, info2: tuple, start_t
     'error': None
     }
     """
+    print("calculate_trip_details executed")
     return result
 # Example usage
 if __name__ == "__main__":

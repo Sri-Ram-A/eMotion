@@ -7,6 +7,7 @@ import * as types from "@/types"
 import styles from "@/styles/Splitdriver"; 
 function CheckBox({ label, value, onChange }: { label: string, value: boolean, onChange: (val: boolean) => void }) {
     return (
+
         <Pressable 
             style={{ 
                 flexDirection: 'row', 
@@ -56,14 +57,12 @@ export default function AboutScreen() {
     const [showRatingModal, setShowRatingModal] = useState(false);
     const ws = useRef<WebSocket | null>(null);
     const { id } = useContext(IDContext);
-
     useEffect(() => {
         ws.current = new WebSocket(api.SOCKET +"split_rides/"+ id);
-
         ws.current.onopen = () => {
             console.log("WebSocket connected");
         };
-
+        
         ws.current.onmessage = (e) => {
             console.log("Received:", e.data);
             try {

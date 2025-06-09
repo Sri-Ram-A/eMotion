@@ -34,14 +34,14 @@ export default function RootLayout() {
         <Stack.Screen
           name="index"
           options={{
-            headerShown: true,
+            headerShown: false,
             title: 'login',
           }}
         />
         <Stack.Screen
           name="register"
           options={{
-            headerShown: true,
+            headerShown: false,
             title: 'register',
           }}
         />

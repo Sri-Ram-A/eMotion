@@ -2,10 +2,11 @@ from channels.generic.websocket import AsyncWebsocketConsumer
 from api import models, serializers
 from loguru import logger
 import json
-from datetime import datetime
 from . import helper
+from datetime import datetime,timedelta
+from . import junction
 #connect with postamn using this url man
-#ws://localhost:8000/ws/rider/<put some primary key>
+#ws://localhost:8000/ws/rider/split_rides/<put some primary key>
 #You must add CHANNEL_LAYERS in settings to allow group communication
 #see ouput in terminal for clear understanding
 
@@ -26,6 +27,7 @@ class Rider(AsyncWebsocketConsumer):
         self.rider_details = dict(serializers.RiderSerializer(rider).data)
         logger.info(f"[RIDER CONNECTED] ID: {self.rider_id}")
         logger.debug(f"[RIDER DETAILS] {self.rider_details}")
+        self.no_of_drivers=0
 
     async def receive(self, text_data):
         data = json.loads(text_data)
@@ -35,11 +37,13 @@ class Rider(AsyncWebsocketConsumer):
             start_time = current_time.strftime("%H:%M")
             # Rider sends request
             info1,details1=helper.get_coordinates(data.get("source"))
+            
             info2,details2=helper.get_coordinates(data.get("destination"))
             
+            
             ride_data = helper.calculate_trip_details(details1,details2,info1,info2,start_time) 
-            data["source_latitude"],data["source_longitude"],data["source_details"]=ride_data.get("source_latitude"),ride_data.get("source_longitude"),ride_data.get("source_details","No important details")
-            data["destination_latitude"],data["destination_longitude"],data["destination_details"]=ride_data.get("destination_latitude"),ride_data.get("destination_longitude"),ride_data.get("destination_details","No important details")
+            data["source_latitude"],data["source_longitude"],data["source_details"]=ride_data.get("source_latitude"),ride_data.get("source_longitude"),ride_data.get("source_details")
+            data["destination_latitude"],data["destination_longitude"],data["destination_details"]=ride_data.get("destination_latitude"),ride_data.get("destination_longitude"),ride_data.get("destination_details")
             self.estimated_duration=ride_data["estimated_duration"]
             self.distance=ride_data["distance"]
             self.price=ride_data["price"]
@@ -62,7 +66,7 @@ class Rider(AsyncWebsocketConsumer):
                 destination=data.get("destination", ""),
                 estimated_duration=self.estimated_duration,
                 distance=self.distance,
-                price=float(self.price),
+                price=self.price,
                 payment_mode=data.get("payment_mode", "cash"),
                 status=False,
                 review_cleanliness=data.get("review_cleanliness", False),
@@ -79,7 +83,11 @@ class Rider(AsyncWebsocketConsumer):
             start_time = current_time.strftime("%H:%M")
             # Rider sends request
             info1,details1=helper.get_coordinates(data.get("source"))
-            info2,details2=helper.get_coordinates(data.get("destination"))
+            #output of junctions.py
+            #{'start_index': 32, 'end_index': 67, 'start_location': (12.91373, 77.48617), 'end_location': (12.91445, 77.48779),
+            # 'travel_distance': 1.254659580466499, 'straight_distance': 0.09875212318517486}
+            info2,details2=junction.get_intermediate_junctions(data.get("source"),data.get("destination")).get("start_location"),"No important details"
+            info3,details3=helper.get_coordinates(data.get("destination"))
             
             ride_data = helper.calculate_trip_details(details1,details2,info1,info2,start_time) 
             data["source_latitude"],data["source_longitude"],data["source_details"]=ride_data.get("source_latitude"),ride_data.get("source_longitude"),ride_data.get("source_details")
@@ -92,18 +100,49 @@ class Rider(AsyncWebsocketConsumer):
             data["distance"]=self.distance
             ride_request = {**self.rider_details, **data, "from": self.channel_name}
             logger.info(f"[RIDER REQUEST SENT] {ride_request}")
-
+            self.data1=data.copy()
+            await self.channel_layer.group_send("drivers", {
+                "type": "receive_ride_request",
+                "message": ride_request
+            })
+            ride_data = helper.calculate_trip_details(details2,details3,info2,info3,start_time) 
+            data["source_latitude"],data["source_longitude"],data["source_details"]=ride_data.get("source_latitude"),ride_data.get("source_longitude"),ride_data.get("source_details")
+            data["destination_latitude"],data["destination_longitude"],data["destination_details"]=ride_data.get("destination_latitude"),ride_data.get("destination_longitude"),ride_data.get("destination_details")
+            self.estimated_duration=ride_data["estimated_duration"]
+            self.distance=ride_data["distance"]
+            self.price=ride_data["price"]
+            data["price"]=self.price
+            data["estimated_duration"]=self.estimated_duration
+            data["distance"]=self.distance
+            estimated_duration_minutes = helper.parse_duration_to_minutes(self.estimated_duration)
+            # Get the current time
+            current_time = datetime.now()
+            # Create a timedelta object for the estimated duration
+            duration_timedelta = timedelta(minutes=estimated_duration_minutes)
+            # Calculate the arrival time
+            
+            data["arrive_at"] = str((current_time + duration_timedelta).time())
+            self.data2=data.copy()
+            ride_request = {**self.rider_details, **data, "from": self.channel_name}
             await self.channel_layer.group_send("drivers", {
                 "type": "receive_ride_request",
                 "message": ride_request
             })
 
 
+
     async def request_accepted(self, event):
         logger.success(f"[RIDER MATCHED] DRIVER RESPONSE: {event['message']}")
-        await self.send(text_data=json.dumps(event["message"]))
+        self.no_of_drivers+=1
+        print("NO OF DRIVERS",self.no_of_drivers)
+        if self.no_of_drivers==1:
+            self.driver1=event["message"]
+        if self.no_of_drivers==2:
+            self.driver2=event["message"]
+            await self.send(text_data=json.dumps({"driver1":self.driver1,"driver2":self.driver2}))
 
     async def ride_completed(self, event):
+        self.no_of_drivers=0
         await self.send(text_data=json.dumps(event["message"]))
 
     async def disconnect(self, close_code):
@@ -141,7 +180,6 @@ class Driver(AsyncWebsocketConsumer):
                     "type": "notify_ride_taken",
                     "message": {"ride_already_taken": "1"}
                 })
-
         elif data.get("ready") == "0":
             self.driver_details["available"] = "1"
             # Notify rider to leave a review

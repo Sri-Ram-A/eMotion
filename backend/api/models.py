@@ -7,7 +7,7 @@ class Rider(models.Model):
     email=models.EmailField(max_length=254)
     phone_number=models.CharField(max_length=10)
     
-    def _str_(self):
+    def __str__(self):
         return f"{self.name}"
 
 class Driver(models.Model):
@@ -22,7 +22,7 @@ class Driver(models.Model):
     total_rating = models.FloatField(default=0.0)
     earnings = models.FloatField(default=0.0)
 
-    def _str_(self):
+    def __str__(self):
         return f"{self.name}"
 
 class RideDetails(models.Model):
@@ -49,5 +49,5 @@ class RideDetails(models.Model):
         help_text="1:ongoing , 0:ride ended"
     )
     favourite=models.BooleanField(default=False)
-    def _str_(self):
+    def __str__(self):
         return f"{self.rider} to {self.destination} on {self.pickup_time.strftime('%Y-%m-%d %H:%M')}"

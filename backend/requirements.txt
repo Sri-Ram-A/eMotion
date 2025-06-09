@@ -11,3 +11,5 @@ scikit-learn==1.5.2 #very important version number
 joblib
 pandas
 xgboost
+folium
+polyline

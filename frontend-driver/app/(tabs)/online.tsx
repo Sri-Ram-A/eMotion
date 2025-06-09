@@ -5,6 +5,7 @@ import { IDContext } from '@/Context';
 import * as types from "@/types"
 import styles from "../../styles/onlineStyle"; // 👈 updated import
 export default function AboutScreen() {
+  
   const [riderMessage, setRiderMessage] = useState<types.RiderData | string>("Waiting for ride requests...");
   const ws = useRef<WebSocket | null>(null);
   const { id } = useContext(IDContext);
@@ -101,7 +102,7 @@ export default function AboutScreen() {
                     <Text style={styles.label}>📍 From</Text>
                     <Text style={styles.value}>{riderMessage.source_details}</Text>
                   </View>
-
+                  
                   <View style={styles.detailRow}>
                     <Text style={styles.label}>🎯 To</Text>
                     <Text style={styles.value}>{riderMessage.destination_details}</Text>
