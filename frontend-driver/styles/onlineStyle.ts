@@ -3,6 +3,7 @@ import { StyleSheet } from 'react-native';
 const styles = StyleSheet.create({
   scrollContainer: {
     flexGrow: 1,
+    flex: 1 ,
     backgroundColor: '#000000', // black background for whole screen
   },
   container: {

@@ -4,6 +4,7 @@ from loguru import logger
 import json
 from datetime import datetime
 from . import helper
+import asyncio
 #connect with postamn using this url man
 #ws://localhost:8000/ws/rider/<put some primary key>
 #You must add CHANNEL_LAYERS in settings to allow group communication
@@ -37,7 +38,7 @@ class Rider(AsyncWebsocketConsumer):
             info1,details1=helper.get_coordinates(data.get("source"))
             info2,details2=helper.get_coordinates(data.get("destination"))
             
-            ride_data = helper.calculate_trip_details(details1,details2,info1,info2,start_time) 
+            ride_data =  await asyncio.to_thread(helper.calculate_trip_details,details1,details2,info1,info2,start_time)
             data["source_latitude"],data["source_longitude"],data["source_details"]=ride_data.get("source_latitude"),ride_data.get("source_longitude"),ride_data.get("source_details","No important details")
             data["destination_latitude"],data["destination_longitude"],data["destination_details"]=ride_data.get("destination_latitude"),ride_data.get("destination_longitude"),ride_data.get("destination_details","No important details")
             self.estimated_duration=ride_data["estimated_duration"]
@@ -81,7 +82,10 @@ class Rider(AsyncWebsocketConsumer):
             info1,details1=helper.get_coordinates(data.get("source"))
             info2,details2=helper.get_coordinates(data.get("destination"))
             
-            ride_data = helper.calculate_trip_details(details1,details2,info1,info2,start_time) 
+            logger.debug("🚧 Starting sync trip calc (first leg)...")
+            ride_data = await asyncio.to_thread(helper.calculate_trip_details ,details1,details2,info1,info2,start_time)
+            logger.debug("✅ Finished trip calc (first leg).")
+             
             data["source_latitude"],data["source_longitude"],data["source_details"]=ride_data.get("source_latitude"),ride_data.get("source_longitude"),ride_data.get("source_details")
             data["destination_latitude"],data["destination_longitude"],data["destination_details"]=ride_data.get("destination_latitude"),ride_data.get("destination_longitude"),ride_data.get("destination_details")
             self.estimated_duration=ride_data["estimated_duration"]

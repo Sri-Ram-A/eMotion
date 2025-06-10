@@ -36,9 +36,9 @@ def get_coordinates(address):
         data = response.json()
         if data["results"]:
             location = data["results"][0]["geometry"]
-            return location["lat"], location["lng"]
+            return (location["lat"], location["lng"]),None
     
-    return None
+    return (None, None), None
 
 
 def get_route(source, destination):
@@ -112,7 +112,8 @@ def calculate_fare_and_time(route_points, distance_km, start_time_str):
 
     # Sample every N points to reduce API calls (max 10 samples)
     # I sampled with rate of 10 .. You can change
-    sample_rate = max(1, len(route_points) // 100)
+    sample_rate = max(1, len(route_points) // 5)
+    
     print("Sample rate:",sample_rate)
 
     # Calculate travel time by segments between sampled points
@@ -261,6 +262,6 @@ if __name__ == "__main__":
     # Rider sends request
     info1,details1=get_coordinates(city_a)
     info2,details2=get_coordinates(city_b)
-    ride_data = helper.calculate_trip_details(details1,details2,info1,info2,start_time) 
+    ride_data = calculate_trip_details(details1,details2,info1,info2,start_time) 
 
 

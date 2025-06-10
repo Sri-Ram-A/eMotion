@@ -4,8 +4,8 @@ import * as api from '@/services/api';
 import { IDContext } from '@/Context';
 import * as types from "@/types"
 import styles from "../../styles/onlineStyle"; // 👈 updated import
+import Map from '@/map';
 export default function AboutScreen() {
-  
   const [riderMessage, setRiderMessage] = useState<types.RiderData | string>("Waiting for ride requests...");
   const ws = useRef<WebSocket | null>(null);
   const { id } = useContext(IDContext);
@@ -18,7 +18,6 @@ export default function AboutScreen() {
     };
     ws.current.onmessage = (e) => {
       console.log("Received:", e.data);
-
       try {
         const parsed = JSON.parse(e.data);
         if (parsed.ride_already_taken === "1") {
@@ -92,6 +91,7 @@ export default function AboutScreen() {
                     <Text style={styles.label}>👤 Name</Text>
                     <Text style={styles.value}>{riderMessage.name}</Text>
                   </View>
+                  
 
                   <View style={styles.detailRow}>
                     <Text style={styles.label}>📱 Phone</Text>
@@ -100,12 +100,12 @@ export default function AboutScreen() {
 
                   <View style={styles.detailRow}>
                     <Text style={styles.label}>📍 From</Text>
-                    <Text style={styles.value}>{riderMessage.source_details}</Text>
+                    <Text style={styles.value}>{riderMessage.source}</Text>
                   </View>
                   
                   <View style={styles.detailRow}>
                     <Text style={styles.label}>🎯 To</Text>
-                    <Text style={styles.value}>{riderMessage.destination_details}</Text>
+                    <Text style={styles.value}>{riderMessage.destination}</Text>
                   </View>
 
                   <View style={styles.priceDistanceRow}>
@@ -162,7 +162,8 @@ export default function AboutScreen() {
             <View style={styles.rideProgressCard}>
               <Text style={styles.rideProgressTitle}>Ride In Progress 🚗💨</Text>
               <View style={styles.mapPlaceholder}>
-                <Text style={styles.mapPlaceholderText}>📍 Map View</Text>
+                {/* <Text style={styles.mapPlaceholderText}>📍 Map View</Text> */}
+                
                 <Text style={styles.mapSubtext}>Navigation will appear here</Text>
               </View>
               <TouchableOpacity

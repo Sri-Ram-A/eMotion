@@ -74,6 +74,9 @@ npm install
 
 ### ✅ Option 1: Using ngrok (Recommended)
 
+map server
+>
+npx vite preview --host 0.0.0.0 --port 3000
 1. Start Django server
 
 ```bash

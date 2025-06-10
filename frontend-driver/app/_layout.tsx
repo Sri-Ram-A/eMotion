@@ -1,6 +1,7 @@
 import { Stack } from 'expo-router';
 import React from 'react';
 import { useFonts } from 'expo-font';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { IDProvider } from '@/Context';
 
 export default function RootLayout() {
@@ -23,36 +24,38 @@ export default function RootLayout() {
     'Poppins-SemiBoldItalic': require('../assets/fonts/Poppins-SemiBoldItalic.ttf'),
     'Poppins-Thin': require('../assets/fonts/Poppins-Thin.ttf'),
   });
-  
+
   if (!fontsLoaded) {
-    return null; // or <AppLoading />
+    return null; // or a splash screen
   }
 
   return (
-    <IDProvider>
-      <Stack>
-        <Stack.Screen
-          name="index"
-          options={{
-            headerShown: false,
-            title: 'login',
-          }}
-        />
-        <Stack.Screen
-          name="register"
-          options={{
-            headerShown: false,
-            title: 'register',
-          }}
-        />
-        <Stack.Screen
-          name="(tabs)"
-          options={{
-            headerShown: false,
-          }}
-        />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-    </IDProvider>
+    <SafeAreaProvider>
+      <IDProvider>
+        <Stack>
+          <Stack.Screen
+            name="index"
+            options={{
+              headerShown: false,
+              title: 'login',
+            }}
+          />
+          <Stack.Screen
+            name="register"
+            options={{
+              headerShown: false,
+              title: 'register',
+            }}
+          />
+          <Stack.Screen
+            name="(tabs)"
+            options={{
+              headerShown: false,
+            }}
+          />
+          <Stack.Screen name="+not-found" />
+        </Stack>
+      </IDProvider>
+    </SafeAreaProvider>
   );
 }

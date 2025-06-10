@@ -1,11 +1,10 @@
 import { Platform } from 'react-native';
 
-const useTunnel = true; // ✅ Set to `true` if using ngrok or hosted backend
+const useTunnel = false; // ✅ Set to `true` if using ngrok or hosted backend
 
 let HOST: string;
 let BASE_API_URL: string;
 let SOCKET: string;
-
 if (useTunnel) {
   // ✅ Hosted/Tunneled Configuration
   HOST = "cub-true-shiner.ngrok-free.app";

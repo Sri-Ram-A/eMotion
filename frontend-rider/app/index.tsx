@@ -34,7 +34,6 @@ export default function Login() {
       Alert.alert("Error", "Please fill in all fields")
       return
     }
-
     if (formData.phone_number.length !== 10) {
       Alert.alert("Error", "Please enter a valid 10-digit phone number")
       return

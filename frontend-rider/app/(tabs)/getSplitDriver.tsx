@@ -39,11 +39,12 @@ function CheckBox({ label, value, onChange }: { label: string, value: boolean, o
     );
 }
 
+
 export default function AboutScreen() {
     const [source, setSource] = useState('');
     const [destination, setDestination] = useState('');
     const [driverMessage, setDriverMessage] = useState<types.TwoDriverDetails | string>('');
-    const [driver_id, setDriverId] = useState("");
+    const [driver_id, setDriverId] = useState("")
     const [modalVisible, setModalVisible] = useState(false);
     const [ride_rating, setRideRating] = useState("2");
     const [review_cleanliness, setCleanliness] = useState(false);

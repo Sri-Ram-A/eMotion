@@ -5,6 +5,7 @@ import { IDContext } from '@/Context';
 import { router } from "expo-router";
 import * as types from "@/types";
 import styles from '@/styles/getdriverStyles'; // Import styles
+import Map from '@/map'; // adjust path accordingly
 
 function CheckBox({ label, value, onChange }: { label: string; value: boolean; onChange: (val: boolean) => void }) {
   return (
@@ -38,7 +39,6 @@ function CheckBox({ label, value, onChange }: { label: string; value: boolean; o
     </Pressable>
   );
 }
-
 export default function GetDriver() {
   const [source, setSource] = useState('');
   const [destination, setDestination] = useState('');
@@ -46,6 +46,7 @@ export default function GetDriver() {
   const [driver_id, setDriverId] = useState('');
   const [modalVisible, setModalVisible] = useState(false);
   const [ride_rating, setRideRating] = useState('2');
+
   const [review_cleanliness, setCleanliness] = useState(false);
   const [review_discipline, setDiscipline] = useState(false);
   const [review_friendly, setFriendly] = useState(false);
@@ -163,7 +164,6 @@ export default function GetDriver() {
             placeholder="Where are you going?"
             placeholderTextColor="#94a3b8"
           />
-
           <View style={styles.buttonGroup}>
             <TouchableOpacity onPress={handlePriceSubmit} style={[styles.button, styles.secondaryButton]}>
               <Text style={styles.buttonText}>Get Price Estimate</Text>
@@ -173,19 +173,21 @@ export default function GetDriver() {
               <Text style={styles.buttonText}>Find a Driver</Text>
             </TouchableOpacity>
           </View>
-
+          <View>
+            {/* <Map/> */}
+          </View>
           {typeof priceDetails === 'object' && (
             <View style={styles.detailsCard}>
               <Text style={styles.detailsTitle}>Price Breakdown</Text>
 
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>From:</Text>
-                <Text style={styles.detailValue}>{priceDetails.source_details}</Text>
+                <Text style={styles.detailValue}>{priceDetails.source}</Text>
               </View>
 
               <View style={styles.detailRow}>
                 <Text style={styles.detailLabel}>To:</Text>
-                <Text style={styles.detailValue}>{priceDetails.destination_details}</Text>
+                <Text style={styles.detailValue}>{priceDetails.destination}</Text>
               </View>
 
               <View style={styles.detailRow}>
